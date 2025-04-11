@@ -17,6 +17,7 @@
       nixos = { ... }: {
         deployment = {
           allowLocalDeployment = true;
+          targetHost = null; # Only used for local deployment
         };
 
         boot.loader.grub.device = "/dev/sda";
