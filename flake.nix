@@ -14,7 +14,7 @@
         };
       };
 
-      nomad-client = { ... }: {
+      nixos = { ... }: {
         deployment = {
           allowLocalDeployment = true;
         };
