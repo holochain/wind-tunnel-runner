@@ -32,6 +32,10 @@
           extraGroups = [ "networkmanager" "wheel" ];
           hashedPassword = "$y$j9T$4uoXeFexvI/s6fylf.UJd.$400SiovRcdEemmxWaFKniWK0a9ZEzwDB2MTn5.gqb70";
         };
+
+        services.tailscale = {
+          enable = true;
+        };
       };
     };
   };
