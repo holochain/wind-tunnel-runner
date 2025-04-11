@@ -23,6 +23,12 @@
           device = "/dev/sda1";
           fsType = "ext4";
         };
+
+        users.users.holochain = {
+          isNormalUser = true;
+          description = "Holochain Dev Account";
+          extraGroups = [ "networkmanager" "wheel" ];
+        };
       };
     };
   };
