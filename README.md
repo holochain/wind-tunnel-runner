@@ -24,7 +24,10 @@ system.
 The first step is to add a new machine "node" with a unique name to the
 `Colmena` definition in the [flake.nix](flake.nix).
 
-Do this by adding an entry under `outputs.flake.colmena.<your-machine-name>`:
+Do this by adding an entry under `outputs.flake.colmena.<your-machine-name>`.
+The entry needs to contain any configuration specific to this new machine, for
+example the root directory `fileSystems` entry from the generated
+`hardware-configuration.nix` file.
 
 ```nix
 outputs = inputs: inputs.flake-parts.lib.mkFlake { inherit inputs; } {
@@ -40,7 +43,12 @@ outputs = inputs: inputs.flake-parts.lib.mkFlake { inherit inputs; } {
       # ...other config...
 
       <your-machine-name> = _: {
-        # ...machine-specific config here...
+        fileSystems."/" = {
+          device = "/dev/disk/by-uuid/<uuid-of-main-drive>";
+          fsType = "ext4";
+        };
+
+        # ...other machine-specific config here...
       };
     };
 };
