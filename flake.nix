@@ -72,7 +72,7 @@
             fi
 
             cd ${./.}
-            ${pkgs.colmena}/bin/colmena apply-local --sudo --impure --node="$node"
+            ${pkgs.colmena}/bin/colmena apply-local --impure --node="$node"
             while ! ${pkgs.procps}/bin/pgrep "tailscaled" > /dev/null; do
               sleep 0.5
             done
@@ -84,7 +84,7 @@
               read -r -p "Reboot now? (y/n) " yn
               case $yn in
                 [yY]*)
-                  sudo reboot now
+                  reboot now
                   break
                   ;;
                 [nN]*)
