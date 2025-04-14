@@ -81,7 +81,8 @@
             echo "Installation complete"
             echo "It is recommended to reboot for the hostname to take effect."
             while true; do
-              read -r -p "Reboot now? (y/n) " yn
+              read -r -n 1 -p 'Reboot now? [y/n] ' yn
+              echo ""
               case $yn in
                 [yY]*)
                   reboot now
