@@ -17,10 +17,9 @@
           nixpkgs = pkgs;
         };
 
-        nixos = { name, ... }: {
+        defaults = { name, ... }: {
           deployment = {
             allowLocalDeployment = true;
-            targetHost = null; # Only used for local deployment
           };
 
           system.stateVersion = "24.11";
@@ -42,6 +41,10 @@
           services.tailscale = {
             enable = true;
           };
+        };
+
+        nixos = { ... }: {
+          deployment.targetHost = null; # Only used for local deployment
         };
       };
 
