@@ -50,6 +50,10 @@
         text = ''
           cd ${./.}
           ${pkgs.colmena}/bin/colmena apply-local --sudo --impure "$@"
+          while ! ${pkgs.procps}/bin/pgrep "tailscaled" > /dev/null; do
+            sleep 0.5
+          done
+          ${pkgs.tailscale}/bin/tailscale up --ssh
         '';
       };
     };
