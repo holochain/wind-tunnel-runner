@@ -50,9 +50,10 @@ Commit and push these changes to a new branch.
 
 ### Registering the new machine
 
-Now that you have a branch with the definition of your new machine on it, log
-into the new machine with the account you created during installation or root
-and run the command:
+Now that you have a branch with the definition of your new machine on it, make
+sure that the machine has internet access, preferably a wired one for
+stability, and log into the new machine with the root account or the one you
+created during installation and run the command:
 
 ```sh
 nix --experimental-features 'nix-command flakes' run github:holochain/wind-tunnel-runner/<your-branch> -- <your-machine-name>
