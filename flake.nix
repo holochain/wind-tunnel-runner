@@ -23,6 +23,8 @@
             targetHost = null; # Only used for local deployment
           };
 
+          system.stateVersion = "24.11";
+
           boot.loader.grub.device = "/dev/sda";
 
           fileSystems."/" = {
