@@ -98,7 +98,7 @@
 
         build = pkgs.writeShellApplication {
           name = "build-script";
-          text = "${pkgs.colmena}/bin/colmena build --impure";
+          text = "${pkgs.colmena}/bin/colmena build";
         };
       };
     };
