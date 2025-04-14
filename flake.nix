@@ -17,13 +17,15 @@
           nixpkgs = pkgs;
         };
 
-        nixos = { ... }: {
+        nixos = { name, ... }: {
           deployment = {
             allowLocalDeployment = true;
             targetHost = null; # Only used for local deployment
           };
 
           system.stateVersion = "24.11";
+
+          networking.hostName = name;
 
           boot.loader.grub.device = "/dev/sda";
 
