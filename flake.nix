@@ -61,37 +61,44 @@
         inherit (self'.checks.pre-commit) shellHook;
       };
 
-      packages.default = pkgs.writeShellApplication {
-        name = "setup-script";
-        text = ''
-          if [[ -v 1 ]]; then
-              node="$1"
-          else
-              read -r -p "Enter node name: " node
-          fi
+      packages = {
+        default = pkgs.writeShellApplication {
+          name = "setup-script";
+          text = ''
+            if [[ -v 1 ]]; then
+                node="$1"
+            else
+                read -r -p "Enter node name: " node
+            fi
 
-          cd ${./.}
-          ${pkgs.colmena}/bin/colmena apply-local --sudo --impure --node="$node"
-          while ! ${pkgs.procps}/bin/pgrep "tailscaled" > /dev/null; do
-            sleep 0.5
-          done
-          ${pkgs.tailscale}/bin/tailscale up --ssh --hostname="$node"
+            cd ${./.}
+            ${pkgs.colmena}/bin/colmena apply-local --sudo --impure --node="$node"
+            while ! ${pkgs.procps}/bin/pgrep "tailscaled" > /dev/null; do
+              sleep 0.5
+            done
+            ${pkgs.tailscale}/bin/tailscale up --ssh --hostname="$node"
 
-          echo "Installation complete"
-          echo "It is recommended to reboot for the hostname to take effect."
-          while true; do
-            read -r -p "Reboot now? (y/n) " yn
-            case $yn in
-              [yY]*)
-                sudo reboot now
-                break
-                ;;
-              [nN]*)
-                break
-                ;;
-            esac
-          done
-        '';
+            echo "Installation complete"
+            echo "It is recommended to reboot for the hostname to take effect."
+            while true; do
+              read -r -p "Reboot now? (y/n) " yn
+              case $yn in
+                [yY]*)
+                  sudo reboot now
+                  break
+                  ;;
+                [nN]*)
+                  break
+                  ;;
+              esac
+            done
+          '';
+        };
+
+        build = pkgs.writeShellApplication {
+          name = "build-script";
+          text = "${pkgs.colmena}/bin/colmena build --impure";
+        };
       };
     };
 
