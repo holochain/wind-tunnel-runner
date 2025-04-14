@@ -115,7 +115,7 @@
           };
         };
 
-        defaults = { name, pkgs, ... }: {
+        defaults = { name, pkgs, lib, ... }: {
           deployment = {
             allowLocalDeployment = true;
           };
@@ -135,7 +135,10 @@
 
           networking.hostName = name;
 
-          boot.loader.grub.device = "/dev/sda";
+          boot.loader = lib.mkDefault {
+            systemd-boot.enable = true;
+            efi.canTouchEfiVariables = true;
+          };
 
           users = {
             mutableUsers = false;
