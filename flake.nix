@@ -58,7 +58,7 @@
           while ! ${pkgs.procps}/bin/pgrep "tailscaled" > /dev/null; do
             sleep 0.5
           done
-          ${pkgs.tailscale}/bin/tailscale up --ssh
+          ${pkgs.tailscale}/bin/tailscale up --ssh --hostname="$node"
         '';
       };
     };
