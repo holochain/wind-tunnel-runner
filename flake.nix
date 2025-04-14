@@ -177,6 +177,13 @@
             };
           };
         };
+
+        nomad-client-1 = _: {
+          fileSystems."/" = {
+            device = "/dev/disk/by-uuid/a92690a8-d96c-4305-bfd9-ac4cf7f1c9e6";
+            fsType = "ext4";
+          };
+        };
       };
 
   };
