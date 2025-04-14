@@ -9,7 +9,10 @@
   outputs = { ... }@inputs:
     let
       system = "x86_64-linux";
-      pkgs = import inputs.nixpkgs { inherit system; };
+      pkgs = import inputs.nixpkgs {
+        inherit system;
+        config.allowUnfreePredicate = pkg: builtins.elem (inputs.nixpkgs.lib.getName pkg) [ "nomad" ];
+      };
     in
     {
       colmena = {
@@ -51,6 +54,34 @@
 
           services.tailscale = {
             enable = true;
+          };
+
+          services.nomad = {
+            enable = true;
+            dropPrivileges = false; # Clients require root privileges
+
+            extraPackages = with pkgs; [
+              coreutils
+              bash
+              hexdump
+              gnutar
+              bzip2
+              telegraf
+              # Enable unstable and non-default features that Wind Tunnel tests.
+              (inputs.holonix.packages.${system}.holochain.override { cargoExtraArgs = "--features chc,unstable-functions,unstable-countersigning"; })
+            ];
+
+            # The Nomad configuration file
+            settings = {
+              data_dir = "/var/lib/nomad";
+              plugin.raw_exec.config.enabled = true;
+              acl.enabled = true;
+              client = {
+                enabled = true;
+                servers = [ "nomad-server-01.holochain.org" ];
+                artifact.disable_filesystem_isolation = true;
+              };
+            };
           };
         };
       };
