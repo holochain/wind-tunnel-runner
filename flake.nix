@@ -40,5 +40,13 @@
           };
         };
       };
+
+      packages.${system}.default = pkgs.writeShellApplication {
+        name = "setup-script";
+        text = ''
+          cd ${./.}
+          ${pkgs.colmena}/bin/colmena apply-local --sudo --impure "$@"
+        '';
+      };
     };
 }
