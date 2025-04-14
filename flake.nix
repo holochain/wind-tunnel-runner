@@ -76,6 +76,21 @@
             sleep 0.5
           done
           ${pkgs.tailscale}/bin/tailscale up --ssh --hostname="$node"
+
+          echo "Installation complete"
+          echo "It is recommended to reboot for the hostname to take effect."
+          while true; do
+            read -r -p "Reboot now? (y/n) " yn
+            case $yn in
+              [yY]*)
+                sudo reboot now
+                break
+                ;;
+              [nN]*)
+                break
+                ;;
+            esac
+          done
         '';
       };
     };
