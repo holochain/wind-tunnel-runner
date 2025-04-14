@@ -76,7 +76,7 @@
             while ! ${pkgs.procps}/bin/pgrep "tailscaled" > /dev/null; do
               sleep 0.5
             done
-            ${pkgs.tailscale}/bin/tailscale up --ssh --hostname="$node"
+            ${pkgs.tailscale}/bin/tailscale up --ssh --advertise-tags=tag:nomad-client --hostname="$node"
 
             echo "Installation complete"
             echo "It is recommended to reboot for the hostname to take effect."
