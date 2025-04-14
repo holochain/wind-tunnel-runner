@@ -24,22 +24,26 @@ system.
 The first step is to add a new machine "node" with a unique name to the
 `Colmena` definition in the [flake.nix](flake.nix).
 
-Do this by adding an entry under `outputs.colmena.<your-machine-name>`:
+Do this by adding an entry under `outputs.flake.colmena.<your-machine-name>`:
 
 ```nix
-outputs = { ... }@inputs:
-  let
-    system = "x86_64-linux";
-    pkgs = import inputs.nixpkgs { inherit system; };
-  in
-  {
-    colmena = {
-        # ...other config...
-      <your-machine-name> = { ... }: {
-        # ...machine-specific config here...
-      }
-    };
+outputs = inputs: inputs.flake-parts.lib.mkFlake { inherit inputs; } {
+  perSystem = { ... }: {
+    # ...other config...
   };
+
+  flake.colmena =
+    let
+      targetSystem = "x86_64-linux";
+    in
+    {
+      # ...other config...
+
+      <your-machine-name> = _: {
+        # ...machine-specific config here...
+      };
+    };
+};
 ```
 
 Make sure that your machine's name is unique and add any configuration that
