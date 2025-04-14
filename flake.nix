@@ -42,10 +42,6 @@
             enable = true;
           };
         };
-
-        nixos = { ... }: {
-          deployment.targetHost = null; # Only used for local deployment
-        };
       };
 
       packages.${system}.default = pkgs.writeShellApplication {
