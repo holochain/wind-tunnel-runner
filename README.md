@@ -12,7 +12,7 @@ Go to <https://nixos.org/download/#nixos-iso> to get the ISO and install NixOS.
 Feel free to use any of the installation ISOs but the graphical one is easier.
 
 Follow the NixOS installation guide as normal, create any user you want with
-any password as this can all be overwritten by `Colmena` and we will only use
+any password as this user will be overwritten by `Colmena` and we will only use
 the root account with SSH key access. A graphical desktop environment is
 probably not needed so just select `No desktop` when asked.
 
@@ -56,8 +56,13 @@ Commit and push these changes to a new branch.
 
 Now that you have a branch with the definition of your new machine on it, make
 sure that the machine has internet access, preferably a wired one for
-stability, and log into the new machine with the root account or the one you
-created during installation and run the command:
+stability.
+
+Then, log into the machine with the root account and run the command:
+
+> \[!Warning\]
+> Must use the `root` account as all other accounts will be deleted during
+> installation.
 
 ```sh
 nix --experimental-features 'nix-command flakes' run github:holochain/wind-tunnel-runner/<your-branch> -- <your-machine-name>
