@@ -51,8 +51,14 @@
       packages.${system}.default = pkgs.writeShellApplication {
         name = "setup-script";
         text = ''
+          if [[ -v 1 ]]; then
+              node="$1"
+          else
+              read -r -p "Enter node name: " node
+          fi
+
           cd ${./.}
-          ${pkgs.colmena}/bin/colmena apply-local --sudo --impure "$@"
+          ${pkgs.colmena}/bin/colmena apply-local --sudo --impure --node="$node"
           while ! ${pkgs.procps}/bin/pgrep "tailscaled" > /dev/null; do
             sleep 0.5
           done
