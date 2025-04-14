@@ -137,11 +137,6 @@
 
           boot.loader.grub.device = "/dev/sda";
 
-          fileSystems."/" = {
-            device = "/dev/sda1";
-            fsType = "ext4";
-          };
-
           users = {
             mutableUsers = false;
             users.root.hashedPassword = "$y$j9T$4uoXeFexvI/s6fylf.UJd.$400SiovRcdEemmxWaFKniWK0a9ZEzwDB2MTn5.gqb70";
