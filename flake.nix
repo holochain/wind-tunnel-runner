@@ -6,36 +6,39 @@
     nixpkgs.follows = "holonix/nixpkgs";
   };
 
-  outputs = { ... }@inputs: {
-    colmena = {
-      meta = {
-        nixpkgs = import inputs.nixpkgs {
-          system = "x86_64-linux";
-        };
-      };
-
-      nixos = { ... }: {
-        deployment = {
-          allowLocalDeployment = true;
-          targetHost = null; # Only used for local deployment
+  outputs = { ... }@inputs:
+    let
+      system = "x86_64-linux";
+      pkgs = import inputs.nixpkgs { inherit system; };
+    in
+    {
+      colmena = {
+        meta = {
+          nixpkgs = pkgs;
         };
 
-        boot.loader.grub.device = "/dev/sda";
+        nixos = { ... }: {
+          deployment = {
+            allowLocalDeployment = true;
+            targetHost = null; # Only used for local deployment
+          };
 
-        fileSystems."/" = {
-          device = "/dev/sda1";
-          fsType = "ext4";
-        };
+          boot.loader.grub.device = "/dev/sda";
 
-        users = {
-          mutableUsers = false;
-          users.root.hashedPassword = "$y$j9T$4uoXeFexvI/s6fylf.UJd.$400SiovRcdEemmxWaFKniWK0a9ZEzwDB2MTn5.gqb70";
-        };
+          fileSystems."/" = {
+            device = "/dev/sda1";
+            fsType = "ext4";
+          };
 
-        services.tailscale = {
-          enable = true;
+          users = {
+            mutableUsers = false;
+            users.root.hashedPassword = "$y$j9T$4uoXeFexvI/s6fylf.UJd.$400SiovRcdEemmxWaFKniWK0a9ZEzwDB2MTn5.gqb70";
+          };
+
+          services.tailscale = {
+            enable = true;
+          };
         };
       };
     };
-  };
 }
