@@ -100,6 +100,11 @@
           name = "build-script";
           text = "${pkgs.colmena}/bin/colmena build";
         };
+
+        apply = pkgs.writeShellApplication {
+          name = "apply-script";
+          text = "${pkgs.colmena}/bin/colmena apply";
+        };
       };
     };
 
