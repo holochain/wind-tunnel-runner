@@ -84,6 +84,26 @@ manager shared vault).
 Now navigate to <https://login.tailscale.com/admin/machines> and confirm that
 the new machine is there.
 
+#### Password Access
+
+> \[!Warning\]
+> The password is hashed with a random salt and SSH access is managed via
+> Tailscale so it should be safe enough to share. However, know that if you
+> allow access to this machine to the public then password access via SSH
+> should be disabled.
+
+Once the machine is added as a Colmena node, the password is set in the
+[flake.nix](flake.nix) file and cannot be changed manually. You should not need
+the password as you can SSH via Tailscale without it but the password is in the
+password manager's shared vault under `Nomad Client Root Password`.
+
+##### Changing the Password
+
+To change the password, generate a new one in the password manager's shared
+vault and then use `mkpasswd` to generate the hash and set the value of
+`users.users.root.hashedPassword` in the `defaults` to change the password for
+all nodes.
+
 ### Disable key expiration
 
 By default all nodes need a new key every 90 days. For these machines it is
