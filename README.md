@@ -27,7 +27,7 @@ The first step is to add a new machine "node" with a unique name to the
 Do this by adding an entry under `outputs.flake.colmena.<your-machine-name>`.
 The entry needs to contain any configuration specific to this new machine, for
 example the root directory `fileSystems` entry from the generated
-`hardware-configuration.nix` file.
+`hardware-configuration.nix` file, usually found in `/etc/nixos`.
 
 ```nix
 outputs = inputs: inputs.flake-parts.lib.mkFlake { inherit inputs; } {
