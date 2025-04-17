@@ -189,6 +189,25 @@
             fsType = "ext4";
           };
         };
+
+        thetasinner-nomad-client = _: {
+          fileSystems."/" = {
+            device = "/dev/disk/by-uuid/e8e69d53-1bb4-4940-b75c-fee802f9ad09";
+            fsType = "ext4";
+          };
+
+          fileSystems."/boot" = {
+            device = "/dev/disk/by-uuid/F067-62AA";
+            fsType = "vfat";
+            options = [ "fmask=0077" "dmask=0077" ];
+          };
+
+          swapDevices = [
+            {
+              device = "/dev/disk/by-uuid/8cd5c930-69be-482f-98b6-bf9516e541f3";
+            }
+          ];
+        };
       };
 
   };
