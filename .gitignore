@@ -1,0 +1,5 @@
+# Direnv output dir
+.direnv
+
+# Pre-commit hooks file as it is managed by Nix
+.pre-commit-config.yaml
