@@ -189,6 +189,19 @@
             fsType = "ext4";
           };
         };
+
+        thetasinner-testoport = _: {
+          fileSystems."/" = {
+            device = "/dev/disk/by-uuid/e65d760a-7161-44ee-a735-3673f4a449ce";
+            fsType = "ext4";
+          };
+
+          swapDevices = [
+            {
+              device = "/dev/disk/by-uuid/b7e26c42-4a96-404a-9281-ea3e92ff5895";
+            }
+          ];
+        };
       };
 
   };
