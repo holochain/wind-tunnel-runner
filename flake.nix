@@ -190,7 +190,7 @@
           };
         };
 
-        thetasinner-nomad-client = _: {
+        thetasinner-testoport = _: {
           fileSystems."/" = {
             device = "/dev/disk/by-uuid/e65d760a-7161-44ee-a735-3673f4a449ce";
             fsType = "ext4";
