@@ -192,19 +192,19 @@
 
         thetasinner-nomad-client = _: {
           fileSystems."/" = {
-            device = "/dev/disk/by-uuid/e8e69d53-1bb4-4940-b75c-fee802f9ad09";
+            device = "/dev/disk/by-uuid/e65d760a-7161-44ee-a735-3673f4a449ce";
             fsType = "ext4";
           };
 
           fileSystems."/boot" = {
-            device = "/dev/disk/by-uuid/F067-62AA";
+            device = "/dev/disk/by-uuid/72CO-BA33";
             fsType = "vfat";
             options = [ "fmask=0077" "dmask=0077" ];
           };
 
           swapDevices = [
             {
-              device = "/dev/disk/by-uuid/8cd5c930-69be-482f-98b6-bf9516e541f3";
+              device = "/dev/disk/by-uuid/b7e26c42-4a96-404a-9281-ea3e92ff5895";
             }
           ];
         };
