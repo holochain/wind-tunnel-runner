@@ -189,6 +189,12 @@
             fsType = "ext4";
           };
         };
+        nomad-client-zippy-hp-1 = _: {
+          fileSystems."/" = {
+            device = "/dev/disk/by-uuid/78fd838f-7138-44cf-a7b0-de82f18c1c7a";
+            fsType = "ext4";
+          };
+        };
       };
 
   };
