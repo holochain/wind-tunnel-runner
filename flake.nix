@@ -211,6 +211,13 @@
 
           nixpkgs.config.allowBroken = true;
         };
+
+        nomad-client-zippy-hp-1 = _: {
+          fileSystems."/" = {
+            device = "/dev/disk/by-uuid/8cd1f3a9-c743-42de-833a-6b9769ebd758";
+            fsType = "ext4";
+          };
+        };
       };
   };
 }
