@@ -196,7 +196,21 @@
             fsType = "ext4";
           };
         };
-      };
 
+        thetasinner-testoport = { config, ... }: {
+          fileSystems."/" = {
+            device = "/dev/disk/by-uuid/727efd61-af0f-4b5d-ab90-8b6fb3221c5b";
+            fsType = "ext4";
+          };
+
+          console.keyMap = "uk";
+
+          boot.extraModulePackages = with config.boot.kernelPackages; [
+            r8125
+          ];
+
+          nixpkgs.config.allowBroken = true;
+        };
+      };
   };
 }
