@@ -190,17 +190,19 @@
           };
         };
 
-        thetasinner-testoport = _: {
+        thetasinner-testoport = { config, ... }: {
           fileSystems."/" = {
-            device = "/dev/disk/by-uuid/e65d760a-7161-44ee-a735-3673f4a449ce";
+            device = "/dev/disk/by-uuid/727efd61-af0f-4b5d-ab90-8b6fb3221c5b";
             fsType = "ext4";
           };
 
-          swapDevices = [
-            {
-              device = "/dev/disk/by-uuid/b7e26c42-4a96-404a-9281-ea3e92ff5895";
-            }
+          console.keyMap = "uk";
+
+          boot.extraModulePackages = with config.boot.kernelPackages; [
+            r8125
           ];
+
+          nixpkgs.config.allowBroken = true;
         };
       };
 
