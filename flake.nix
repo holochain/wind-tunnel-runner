@@ -189,11 +189,12 @@
             fsType = "ext4";
           };
         };
-        
+
         nomad-client-2 = _: {
           fileSystems."/" = {
             device = "/dev/disk/by-uuid/8dabb938-b5e5-4b81-8cd7-65266e25fd37";
             fsType = "ext4";
+          };
         };
 
         thetasinner-testoport = { config, ... }: {
@@ -211,6 +212,5 @@
           nixpkgs.config.allowBroken = true;
         };
       };
-
   };
 }
