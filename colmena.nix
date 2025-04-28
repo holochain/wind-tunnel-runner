@@ -37,7 +37,7 @@ in
 
     users = {
       mutableUsers = false;
-      users.root.hashedPassword = "$y$j9T$LEwPZpyLzb3CKDBEtAi.w1$Uxok0mk4i5AWJ0zbPaqfY6T7Bw5nNYteu69yxqD7Mg/";
+      users.root.hashedPassword = lib.mkDefault "$y$j9T$LEwPZpyLzb3CKDBEtAi.w1$Uxok0mk4i5AWJ0zbPaqfY6T7Bw5nNYteu69yxqD7Mg/";
     };
 
     services.tailscale = {
