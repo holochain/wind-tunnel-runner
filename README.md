@@ -46,8 +46,7 @@ in
 ```
 
 Make sure that your machine's name is unique and add any configuration that
-differs from the default. For example, if your boot device is not `/dev/sda`
-then change `boot.loader.grub.device` and `fileSystems."/".device` accordingly.
+differs from the default.
 
 Commit and push these changes to a new branch.
 
