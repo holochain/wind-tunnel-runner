@@ -22,36 +22,27 @@ system.
 ### Adding new machine
 
 The first step is to add a new machine "node" with a unique name to the
-`Colmena` definition in the [flake.nix](flake.nix).
+`Colmena` definition in the [colmena.nix](colmena.nix).
 
-Do this by adding an entry under `outputs.flake.colmena.<your-machine-name>`.
 The entry needs to contain any configuration specific to this new machine, for
 example the root directory `fileSystems` entry from the generated
 `hardware-configuration.nix` file, usually found in `/etc/nixos`.
 
 ```nix
-outputs = inputs: inputs.flake-parts.lib.mkFlake { inherit inputs; } {
-  perSystem = { ... }: {
-    # ...other config...
-  };
+inputs:
+let
+  targetSystem = "x86_64-linux";
+in
+{
+  # ...other config...
 
-  flake.colmena =
-    let
-      targetSystem = "x86_64-linux";
-    in
-    {
-      # ...other config...
-
-      <your-machine-name> = _: {
-        fileSystems."/" = {
-          device = "/dev/disk/by-uuid/<uuid-of-main-drive>";
-          fsType = "ext4";
-        };
-
-        # ...other machine-specific config here...
-      };
+  <your-machine-name> = _: {
+    fileSystems."/" = {
+      device = "/dev/disk/by-uuid/<uuid-of-main-drive>";
+      fsType = "ext4";
     };
-};
+  };
+}
 ```
 
 Make sure that your machine's name is unique and add any configuration that
@@ -92,17 +83,18 @@ the new machine is there.
 > allow access to this machine to the public then password access via SSH
 > should be disabled.
 
-Once the machine is added as a Colmena node, the password is set in the
-[flake.nix](flake.nix) file and cannot be changed manually. You should not need
-the password as you can SSH via Tailscale without it but the password is in the
-password manager's shared vault under `Nomad Client Root Password`.
+Once the machine is added as a Colmena node, the password is set under the
+defaults section in the [colmena.nix](colmena.nix) file and cannot be changed
+manually. You should not need the password as you can SSH via Tailscale without
+it but the password is in the password manager's shared vault under
+`Nomad Client Root Password`.
 
 ##### Changing the Password
 
 To change the password, generate a new one in the password manager's shared
 vault and then use `mkpasswd` to generate the hash and set the value of
-`users.users.root.hashedPassword` in the `defaults` to change the password for
-all nodes.
+`users.users.root.hashedPassword` in the `defaults` section of the
+[colmena.nix](colmena.nix) to change the password for all nodes.
 
 ### Disable key expiration
 
