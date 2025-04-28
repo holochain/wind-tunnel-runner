@@ -50,6 +50,37 @@ differs from the default.
 
 Commit and push these changes to a new branch.
 
+#### Bootloader
+
+> \[!Warning\]
+> Holoports seem to use GRUB and so you need to follow this section.
+
+By default, systemd-boot is used as the bootloader. If your system already has
+GRUB installed then the NixOS installer might default to using GRUB instead of
+systemd-boot.
+
+You can find out what bootloader is currently used by checking the generated
+`/etc/nixos/hardware-configuration.nix` file and looking for `boot.loader`
+options.
+
+If you are currently using GRUB, or if you just prefer to use GRUB, then
+override the bootloader for your node only to switch to GRUB:
+
+```nix
+<your-machine-name> = _: {
+  # ...other config...
+
+  boot.loader = {
+    systemd-boot.enable = false;
+    grub = {
+      enable = true;
+      device = "/dev/sda";  # Change to mounted drive where GRUB is/should be installed
+      # useOSProber = true; # Uncomment if dual-booting with another OS
+    };
+  };
+};
+```
+
 ### Registering the new machine
 
 Now that you have a branch with the definition of your new machine on it, make
