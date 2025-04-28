@@ -96,6 +96,18 @@ vault and then use `mkpasswd` to generate the hash and set the value of
 `users.users.root.hashedPassword` in the `defaults` section of the
 [colmena.nix](colmena.nix) to change the password for all nodes.
 
+Alternatively, if you really want a different password for only your node for
+easier local access, you can override the default by setting
+`users.users.root.hashedPassword` for your node only.
+
+```nix
+<your-machine-name> = _: {
+  # ...other config...
+
+  users.users.root.hashedPassword = "<password-hash-from-mkpasswd>"
+};
+```
+
 ### Disable key expiration
 
 By default all nodes need a new key every 90 days. For these machines it is
