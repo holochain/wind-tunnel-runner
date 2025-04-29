@@ -53,7 +53,7 @@ Commit and push these changes to a new branch.
 #### Bootloader
 
 > \[!Warning\]
-> Holoports seem to use GRUB and so you need to follow this section.
+> HoloPorts seem to use GRUB and so you need to follow this section.
 
 By default, systemd-boot is used as the bootloader. If your system already has
 GRUB installed then the NixOS installer might default to using GRUB instead of
