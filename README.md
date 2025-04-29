@@ -3,6 +3,24 @@
 The guide and NixOS configuration for setting up a machine to run Wind Tunnel
 scenarios
 
+The machines that are created and managed by this repository are used as Nomad
+clients for testing [Wind Tunnel](https://github.com/holochain/wind-tunnel)
+scenarios. They will be part of the Nomad cluster that is managed by the Nomad
+server at <http://nomad-server-01.holochain.org:4646>.
+
+The desire is that these machines will always be accessible, be in various
+locations, and be of a range of power (CPU speed etc.) as to provide a wide
+range of test machines to accurately match a real-world environment.
+
+These machines are designed to be for internal use only and as such the
+configuration in this repository should only be used if you are directly
+involved. A common machine to be repurposed for this project are HoloPorts and
+so there is mention of the HoloPorts in this documentation, but this project is
+not officially associated with the HoloPorts and the configuration in this
+repository is designed to replace HPOS entirely. Therefore, if you have a
+HoloPort and you want to continue to participate in the Holo testing network
+then please ignore these instructions.
+
 ## Adding a node
 
 ### Installing NixOS
