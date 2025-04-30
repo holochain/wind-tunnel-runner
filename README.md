@@ -3,6 +3,24 @@
 The guide and NixOS configuration for setting up a machine to run Wind Tunnel
 scenarios
 
+The machines that are created and managed by this repository are used as Nomad
+clients for testing [Wind Tunnel](https://github.com/holochain/wind-tunnel)
+scenarios. They will be part of the Nomad cluster that is managed by the Nomad
+server at <http://nomad-server-01.holochain.org:4646>.
+
+The desire is that these machines will always be accessible, be in various
+locations, and be of a range of power (CPU speed etc.) as to provide a wide
+range of test machines to accurately match a real-world environment.
+
+These machines are designed to be for internal use only and as such the
+configuration in this repository should only be used if you are directly
+involved. A common machine to be repurposed for this project are HoloPorts and
+so there is mention of the HoloPorts in this documentation, but this project is
+not officially associated with the HoloPorts and the configuration in this
+repository is designed to replace HPOS entirely. Therefore, if you have a
+HoloPort and you want to continue to participate in the Holo testing network
+then please ignore these instructions.
+
 ## Adding a node
 
 ### Installing NixOS
@@ -22,43 +40,64 @@ system.
 ### Adding new machine
 
 The first step is to add a new machine "node" with a unique name to the
-`Colmena` definition in the [flake.nix](flake.nix).
+`Colmena` definition in the [colmena.nix](colmena.nix).
 
-Do this by adding an entry under `outputs.flake.colmena.<your-machine-name>`.
 The entry needs to contain any configuration specific to this new machine, for
 example the root directory `fileSystems` entry from the generated
 `hardware-configuration.nix` file, usually found in `/etc/nixos`.
 
 ```nix
-outputs = inputs: inputs.flake-parts.lib.mkFlake { inherit inputs; } {
-  perSystem = { ... }: {
-    # ...other config...
-  };
+inputs:
+let
+  targetSystem = "x86_64-linux";
+in
+{
+  # ...other config...
 
-  flake.colmena =
-    let
-      targetSystem = "x86_64-linux";
-    in
-    {
-      # ...other config...
-
-      <your-machine-name> = _: {
-        fileSystems."/" = {
-          device = "/dev/disk/by-uuid/<uuid-of-main-drive>";
-          fsType = "ext4";
-        };
-
-        # ...other machine-specific config here...
-      };
+  <your-machine-name> = _: {
+    fileSystems."/" = {
+      device = "/dev/disk/by-uuid/<uuid-of-main-drive>";
+      fsType = "ext4";
     };
-};
+  };
+}
 ```
 
 Make sure that your machine's name is unique and add any configuration that
-differs from the default. For example, if your boot device is not `/dev/sda`
-then change `boot.loader.grub.device` and `fileSystems."/".device` accordingly.
+differs from the default.
 
 Commit and push these changes to a new branch.
+
+#### Bootloader
+
+> \[!Warning\]
+> HoloPorts seem to use GRUB and so you need to follow this section.
+
+By default, systemd-boot is used as the bootloader. If your system already has
+GRUB installed then the NixOS installer might default to using GRUB instead of
+systemd-boot.
+
+You can find out what bootloader is currently used by checking the generated
+`/etc/nixos/hardware-configuration.nix` file and looking for `boot.loader`
+options.
+
+If you are currently using GRUB, or if you just prefer to use GRUB, then
+override the bootloader for your node only to switch to GRUB:
+
+```nix
+<your-machine-name> = _: {
+  # ...other config...
+
+  boot.loader = {
+    systemd-boot.enable = false;
+    grub = {
+      enable = true;
+      device = "/dev/sda";  # Change to mounted drive where GRUB is/should be installed
+      # useOSProber = true; # Uncomment if dual-booting with another OS
+    };
+  };
+};
+```
 
 ### Registering the new machine
 
@@ -92,17 +131,30 @@ the new machine is there.
 > allow access to this machine to the public then password access via SSH
 > should be disabled.
 
-Once the machine is added as a Colmena node, the password is set in the
-[flake.nix](flake.nix) file and cannot be changed manually. You should not need
-the password as you can SSH via Tailscale without it but the password is in the
-password manager's shared vault under `Nomad Client Root Password`.
+Once the machine is added as a Colmena node, the password is set under the
+defaults section in the [colmena.nix](colmena.nix) file and cannot be changed
+manually. You should not need the password as you can SSH via Tailscale without
+it but the password is in the password manager's shared vault under
+`Nomad Client Root Password`.
 
 ##### Changing the Password
 
 To change the password, generate a new one in the password manager's shared
 vault and then use `mkpasswd` to generate the hash and set the value of
-`users.users.root.hashedPassword` in the `defaults` to change the password for
-all nodes.
+`users.users.root.hashedPassword` in the `defaults` section of the
+[colmena.nix](colmena.nix) to change the password for all nodes.
+
+Alternatively, if you really want a different password for only your node for
+easier local access, you can override the default by setting
+`users.users.root.hashedPassword` for your node only.
+
+```nix
+<your-machine-name> = _: {
+  # ...other config...
+
+  users.users.root.hashedPassword = "<password-hash-from-mkpasswd>"
+};
+```
 
 ### Disable key expiration
 
