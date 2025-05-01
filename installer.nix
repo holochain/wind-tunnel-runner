@@ -48,34 +48,45 @@ in
         done
       }
 
-      ${parted}/bin/parted -s /dev/sda -- mklabel msdos
-      ${parted}/bin/parted -s /dev/sda -- mkpart primary 1MB -8GB
-      ${parted}/bin/parted -s /dev/sda -- set 1 boot on
-      ${parted}/bin/parted -s /dev/sda -- mkpart primary linux-swap -8GB 100%
+      install-legacy() {
+        echo "Legacy/BIOS system detected, proceeding with install"
 
-      ${coreutils-full}/bin/sync
+        ${parted}/bin/parted -s /dev/sda -- mklabel msdos
+        ${parted}/bin/parted -s /dev/sda -- mkpart primary 1MB -8GB
+        ${parted}/bin/parted -s /dev/sda -- set 1 boot on
+        ${parted}/bin/parted -s /dev/sda -- mkpart primary linux-swap -8GB 100%
 
-      ${e2fsprogs}/bin/mkfs.ext4 -L nixos /dev/sda1
+        ${coreutils-full}/bin/sync
 
-      ${util-linux}/bin/mkswap -L swap /dev/sda2
+        ${e2fsprogs}/bin/mkfs.ext4 -L nixos /dev/sda1
 
-      ${coreutils-full}/bin/sync
+        ${util-linux}/bin/mkswap -L swap /dev/sda2
 
-      wait-for [ -b /dev/disk/by-label/nixos ]
-      mount /dev/disk/by-label/nixos /mnt
+        ${coreutils-full}/bin/sync
 
-      ${util-linux}/bin/swapon /dev/sda2
+        wait-for [ -b /dev/disk/by-label/nixos ]
+        mount /dev/disk/by-label/nixos /mnt
 
-      ${coreutils-full}/bin/mkdir -p /mnt/etc/nixos
-      ${coreutils-full}/bin/cp ${./base-install.nix} /mnt/etc/nixos/configuration.nix
+        ${util-linux}/bin/swapon /dev/sda2
 
-      ${config.system.build.nixos-install}/bin/nixos-install \
-        --system ${evaluatedSystem.config.system.build.toplevel} \
-        --no-root-passwd \
-        --cores 0
+        ${coreutils-full}/bin/mkdir -p /mnt/etc/nixos
+        ${coreutils-full}/bin/cp ${./base-install.nix} /mnt/etc/nixos/configuration.nix
 
-      ${coreutils-full}/bin/mkdir -p /mnt/root/secrets
-      ${coreutils-full}/bin/cp /iso/tailscale_key /mnt/root/secrets/tailscale_key
+        ${config.system.build.nixos-install}/bin/nixos-install \
+          --system ${evaluatedSystem.config.system.build.toplevel} \
+          --no-root-passwd \
+          --cores 0
+
+        ${coreutils-full}/bin/mkdir -p /mnt/root/secrets
+        ${coreutils-full}/bin/cp /iso/tailscale_key /mnt/root/secrets/tailscale_key
+      }
+
+      install-uefi() {
+        echo "UEFI system detected so aborting install"
+        exit 0
+      }
+
+      [ -d /sys/firmware/efi/efivars ] && install-uefi || install-legacy
 
       ${systemd}/bin/systemctl poweroff
     '';
