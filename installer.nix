@@ -53,9 +53,13 @@ in
       ${parted}/bin/parted -s /dev/sda -- set 1 boot on
       ${parted}/bin/parted -s /dev/sda -- mkpart primary linux-swap -8GB 100%
 
+      ${coreutils-full}/bin/sync
+
       ${e2fsprogs}/bin/mkfs.ext4 -L nixos /dev/sda1
 
       ${util-linux}/bin/mkswap -L swap /dev/sda2
+
+      ${coreutils-full}/bin/sync
 
       wait-for [ -b /dev/disk/by-label/nixos ]
       mount /dev/disk/by-label/nixos /mnt
