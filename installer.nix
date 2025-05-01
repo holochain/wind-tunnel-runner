@@ -39,6 +39,15 @@ in
     script = with pkgs; ''
       set -euxo pipefail
 
+      wait-for() {
+        for _ in $(seq 10); do
+          if $@; then
+            break
+          fi
+          sleep 1
+        done
+      }
+
       ${parted}/bin/parted -s /dev/sda -- mklabel msdos
       ${parted}/bin/parted -s /dev/sda -- mkpart primary 1MB -8GB
       ${parted}/bin/parted -s /dev/sda -- set 1 boot on
@@ -48,6 +57,7 @@ in
 
       ${util-linux}/bin/mkswap -L swap /dev/sda2
 
+      wait-for [ -b /dev/disk/by-label/nixos ]
       mount /dev/disk/by-label/nixos /mnt
 
       ${util-linux}/bin/swapon /dev/sda2
