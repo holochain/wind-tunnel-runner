@@ -68,7 +68,11 @@ in
   };
 
   # Enable Tailscale, used for SSH access
-  services.tailscale.enable = true;
+  services.tailscale = {
+    enable = true;
+    authKeyFile = "/root/secrets/tailscale_key";
+    extraUpFlags = [ "--ssh" "--advertise-tags=tag:nomad-client" ];
+  };
 
   # Enable Nomad as a client node
   services.nomad = {

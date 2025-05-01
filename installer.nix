@@ -74,6 +74,9 @@ in
         --no-root-passwd \
         --cores 0
 
+      ${coreutils-full}/bin/mkdir -p /mnt/root/secrets
+      ${coreutils-full}/bin/cp /iso/tailscale_key /mnt/root/secrets/tailscale_key
+
       ${systemd}/bin/systemctl poweroff
     '';
     serviceConfig = {
@@ -82,4 +85,10 @@ in
     };
   };
 
+  isoImage.contents = [
+    {
+      source = pkgs.writeText "tailscale_key" "<add Tailscale Key here>";
+      target = "tailscale_key";
+    }
+  ];
 }
