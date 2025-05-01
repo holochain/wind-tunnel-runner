@@ -11,14 +11,14 @@
     ];
 
     # Enable the GRUB bootloader and install it on `sda` drive
-    loader.grub = {
+    loader.grub = lib.mkOptionDefault {
       enable = true;
       device = "/dev/sda";
     };
   };
 
   # Mount the root file system
-  fileSystems."/" = {
+  fileSystems."/" = lib.mkOptionDefault {
     device = "/dev/disk/by-label/nixos";
     fsType = "ext4";
   };

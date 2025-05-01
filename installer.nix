@@ -1,8 +1,9 @@
-{ config, pkgs, lib, modulesPath, ... }:
+{ inputs, config, pkgs, lib, modulesPath, ... }:
 let
   evaluatedSystem = lib.nixosSystem {
     system = "x86_64-linux";
     modules = [ ./base-install.nix ];
+    specialArgs = { inherit inputs; };
   };
 in
 {
