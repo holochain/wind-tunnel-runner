@@ -1,4 +1,9 @@
-{ pkgs, lib, inputs, ... }: {
+{ pkgs, lib, inputs, ... }:
+let
+  # Set a value with a lower priority than `lib.mkDefault`
+  mkBaseDefault = value: lib.mkOverride 1200 value;
+in
+{
   boot = {
     # Kernel modules available for use during the boot process. Must include all modules necessary for mounting the root device
     initrd.availableKernelModules = [
@@ -11,14 +16,14 @@
     ];
 
     # Enable the GRUB bootloader and install it on `sda` drive
-    loader.grub = lib.mkOptionDefault {
+    loader.grub = mkBaseDefault {
       enable = true;
       device = "/dev/sda";
     };
   };
 
   # Mount the root file system
-  fileSystems."/" = lib.mkOptionDefault {
+  fileSystems."/" = mkBaseDefault {
     device = "/dev/disk/by-label/nixos";
     fsType = "ext4";
   };
@@ -48,7 +53,7 @@
 
   networking = {
     # Set the default machine's name
-    hostName = lib.mkDefault "nomad-client";
+    hostName = mkBaseDefault "nomad-client";
 
     # Enable DHCP for all network devices
     useDHCP = true;
@@ -59,7 +64,7 @@
     mutableUsers = false;
 
     # Set the password of the root user to the one in the password manager
-    extraUsers.root.hashedPassword = lib.mkDefault "$y$j9T$LEwPZpyLzb3CKDBEtAi.w1$Uxok0mk4i5AWJ0zbPaqfY6T7Bw5nNYteu69yxqD7Mg/";
+    extraUsers.root.hashedPassword = mkBaseDefault "$y$j9T$LEwPZpyLzb3CKDBEtAi.w1$Uxok0mk4i5AWJ0zbPaqfY6T7Bw5nNYteu69yxqD7Mg/";
   };
 
   # Enable Tailscale, used for SSH access
