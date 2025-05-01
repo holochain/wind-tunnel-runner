@@ -59,7 +59,6 @@ in
 
       ${coreutils-full}/bin/mkdir -p /mnt/etc/nixos
       ${coreutils-full}/bin/cp -r ${./base-install}/* /mnt/etc/nixos/
-      #${coreutils-full}/bin/chmod -R 755 /mnt/etc/nixos
 
       ${config.system.build.nixos-install}/bin/nixos-install \
         --system ${evaluatedSystem.config.system.build.toplevel} \
