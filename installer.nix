@@ -109,24 +109,32 @@ in
       install-uefi() {
         echo "UEFI system detected"
 
-        if [ ! -b /dev/sda ]; then
+        [ -b /dev/sda ] && dev=/dev/sda
+        [ -b /dev/nvme0n1 ] && dev=/dev/nvme0n1
+
+        if [ -z ''${dev+x} ]; then
           echo "Cannot find drive to install on, aborting"
           exit 1
+        else
+          echo "Erasing $dev and installing Wind Tunnel Runner NixOS"
         fi
 
-        ${parted}/bin/parted -s /dev/sda -- mklabel gpt
-        ${parted}/bin/parted -s /dev/sda -- mkpart root ext4 512MB -8GB
-        ${parted}/bin/parted -s /dev/sda -- mkpart swap linux-swap -8GB 100%
-        ${parted}/bin/parted -s /dev/sda -- mkpart ESP fat32 1MB 512MB
-        ${parted}/bin/parted -s /dev/sda -- set 3 esp on
+        ${parted}/bin/parted -s "$dev" -- mklabel gpt
+        ${parted}/bin/parted -s "$dev" -- mkpart root ext4 512MB -8GB
+        ${parted}/bin/parted -s "$dev" -- name 1 nixos
+        ${parted}/bin/parted -s "$dev" -- mkpart swap linux-swap -8GB 100%
+        ${parted}/bin/parted -s "$dev" -- name 2 swap
+        ${parted}/bin/parted -s "$dev" -- mkpart ESP fat32 1MB 512MB
+        ${parted}/bin/parted -s "$dev" -- name 3 boot
+        ${parted}/bin/parted -s "$dev" -- set 3 esp on
 
         ${coreutils-full}/bin/sync
 
-        ${e2fsprogs}/bin/mkfs.ext4 -L nixos /dev/sda1
+        ${e2fsprogs}/bin/mkfs.ext4 -L nixos /dev/disk/by-partlabel/nixos
 
-        ${util-linux}/bin/mkswap -L swap /dev/sda2
+        ${util-linux}/bin/mkswap -L swap /dev/disk/by-partlabel/swap
 
-        ${dosfstools}/bin/mkfs.fat -F 32 -n boot /dev/sda3
+        ${dosfstools}/bin/mkfs.fat -F 32 -n boot /dev/disk/by-partlabel/boot
 
         ${coreutils-full}/bin/sync
 
@@ -136,7 +144,8 @@ in
         ${coreutils-full}/bin/mkdir -p /mnt/boot
         mount -o umask=077 /dev/disk/by-label/boot /mnt/boot
 
-        ${util-linux}/bin/swapon /dev/sda2
+        wait-for [ -b /dev/disk/by-label/swap ]
+        ${util-linux}/bin/swapon /dev/disk/by-label/swap
 
         ${config.system.build.nixos-install}/bin/nixos-install \
           --system ${uefiSystem.config.system.build.toplevel} \

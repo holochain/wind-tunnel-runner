@@ -8,9 +8,11 @@ in
     # Kernel modules available for use during the boot process. Must include all modules necessary for mounting the root device
     initrd.availableKernelModules = [
       "ata_piix"
+      "xhci_pci"
       "ohci_pci"
       "ehci_pci"
       "ahci"
+      "nvme"
       "sd_mod"
       "sr_mod"
     ];
