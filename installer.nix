@@ -2,7 +2,7 @@
 let
   evaluatedSystem = lib.nixosSystem {
     system = "x86_64-linux";
-    modules = [ ./base-install/configuration.nix ];
+    modules = [ ./base-install.nix ];
   };
 in
 {
@@ -58,7 +58,7 @@ in
       ${util-linux}/bin/swapon /dev/sda2
 
       ${coreutils-full}/bin/mkdir -p /mnt/etc/nixos
-      ${coreutils-full}/bin/cp -r ${./base-install}/* /mnt/etc/nixos/
+      ${coreutils-full}/bin/cp ${./base-install.nix} /mnt/etc/nixos/configuration.nix
 
       ${config.system.build.nixos-install}/bin/nixos-install \
         --system ${evaluatedSystem.config.system.build.toplevel} \
