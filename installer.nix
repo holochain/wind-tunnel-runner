@@ -2,12 +2,30 @@
 let
   legacySystem = lib.nixosSystem {
     system = "x86_64-linux";
-    modules = [ ./base-install-legacy.nix ];
+    modules = [
+      ./base-install.nix
+      {
+        # Enable the GRUB bootloader and install it on `sda` drive
+        boot.loader.grub = {
+          enable = true;
+          device = "/dev/sda";
+        };
+      }
+    ];
     specialArgs = { inherit inputs; };
   };
   uefiSystem = lib.nixosSystem {
     system = "x86_64-linux";
-    modules = [ ./base-install-uefi.nix ];
+    modules = [
+      ./base-install.nix
+      {
+        # Enable the systemd-boot bootloader with UEFI support
+        boot.loader = {
+          systemd-boot.enable = true;
+          efi.canTouchEfiVariables = true;
+        };
+      }
+    ];
     specialArgs = { inherit inputs; };
   };
 in
@@ -79,10 +97,6 @@ in
 
         ${util-linux}/bin/swapon /dev/sda2
 
-        ${coreutils-full}/bin/mkdir -p /mnt/etc/nixos
-        ${coreutils-full}/bin/cp ${./base-install.nix} /mnt/etc/nixos/base-install.nix
-        ${coreutils-full}/bin/cp ${./base-install-legacy.nix} /mnt/etc/nixos/configuration.nix
-
         ${config.system.build.nixos-install}/bin/nixos-install \
           --system ${legacySystem.config.system.build.toplevel} \
           --no-root-passwd \
@@ -123,10 +137,6 @@ in
         mount -o umask=077 /dev/disk/by-label/boot /mnt/boot
 
         ${util-linux}/bin/swapon /dev/sda2
-
-        ${coreutils-full}/bin/mkdir -p /mnt/etc/nixos
-        ${coreutils-full}/bin/cp ${./base-install.nix} /mnt/etc/nixos/base-install.nix
-        ${coreutils-full}/bin/cp ${./base-install-uefi.nix} /mnt/etc/nixos/configuration.nix
 
         ${config.system.build.nixos-install}/bin/nixos-install \
           --system ${uefiSystem.config.system.build.toplevel} \
