@@ -49,7 +49,12 @@ in
       }
 
       install-legacy() {
-        echo "Legacy/BIOS system detected, proceeding with install"
+        echo "Legacy/BIOS system detected"
+
+        if [ ! -b /dev/sda ]; then
+          echo "Cannot find drive to install on, aborting"
+          exit 1
+        fi
 
         ${parted}/bin/parted -s /dev/sda -- mklabel msdos
         ${parted}/bin/parted -s /dev/sda -- mkpart primary 1MB -8GB
