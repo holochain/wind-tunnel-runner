@@ -14,12 +14,6 @@ in
       "sd_mod"
       "sr_mod"
     ];
-
-    # Enable the GRUB bootloader and install it on `sda` drive
-    loader.grub = mkBaseDefault {
-      enable = true;
-      device = "/dev/sda";
-    };
   };
 
   # Mount the root file system

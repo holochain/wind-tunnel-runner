@@ -1,8 +1,8 @@
 { inputs, config, pkgs, lib, modulesPath, ... }:
 let
-  evaluatedSystem = lib.nixosSystem {
+  legacySystem = lib.nixosSystem {
     system = "x86_64-linux";
-    modules = [ ./base-install.nix ];
+    modules = [ ./base-install-legacy.nix ];
     specialArgs = { inherit inputs; };
   };
 in
@@ -75,10 +75,11 @@ in
         ${util-linux}/bin/swapon /dev/sda2
 
         ${coreutils-full}/bin/mkdir -p /mnt/etc/nixos
-        ${coreutils-full}/bin/cp ${./base-install.nix} /mnt/etc/nixos/configuration.nix
+        ${coreutils-full}/bin/cp ${./base-install.nix} /mnt/etc/nixos/base-install.nix
+        ${coreutils-full}/bin/cp ${./base-install-legacy.nix} /mnt/etc/nixos/configuration.nix
 
         ${config.system.build.nixos-install}/bin/nixos-install \
-          --system ${evaluatedSystem.config.system.build.toplevel} \
+          --system ${legacySystem.config.system.build.toplevel} \
           --no-root-passwd \
           --cores 0
 
