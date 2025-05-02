@@ -34,13 +34,6 @@ in
     };
   };
 
-  nomad-client-2 = _: {
-    fileSystems."/" = {
-      device = "/dev/disk/by-uuid/8dabb938-b5e5-4b81-8cd7-65266e25fd37";
-      fsType = "ext4";
-    };
-  };
-
   thetasinner-testoport = { config, ... }: {
     fileSystems."/" = {
       device = "/dev/disk/by-uuid/727efd61-af0f-4b5d-ab90-8b6fb3221c5b";
