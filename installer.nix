@@ -34,7 +34,11 @@ in
     "${modulesPath}/installer/cd-dvd/installation-cd-minimal.nix"
   ];
 
-  isoImage.isoBaseName = "wind-tunnel-runner-auto-installer";
+  isoImage = {
+    isoBaseName = "wind-tunnel-runner-auto-installer";
+    volumeID = "wind-tunnel-runner-installer";
+  };
+
   services.getty.helpLine = ''
     ██╗    ██╗██╗███╗   ██╗██████╗     ████████╗██╗   ██╗███╗   ██╗███╗   ██╗███████╗██╗
     ██║    ██║██║████╗  ██║██╔══██╗    ╚══██╔══╝██║   ██║████╗  ██║████╗  ██║██╔════╝██║
