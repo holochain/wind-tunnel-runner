@@ -23,7 +23,74 @@ then please ignore these instructions.
 
 ## Adding a node
 
-### Installing NixOS
+### Using Auto-installation ISO
+
+Navigate to <https://login.tailscale.com/admin/settings/keys> and login with
+GitHub using the `holochain-release-automation2` account (credentials in the
+shared password manager).
+
+Click the `Generate auth key...` button and create a key with the `tag` of
+`nomad-client`, the other properties are up to you so enable `Reusable` if you
+want to use this live USB on multiple machines.
+
+Replace the contents of [tailscale_key](tailscale_key) with the key you
+just generated above.
+
+> \[!Warning\]
+> Do not commit your changes to the `tailscale_key` file.
+
+Generate the installation ISO by running:
+
+```shell
+nix build .#installer-iso
+```
+
+Create a live USB from the ISO you just generated with `dd`, or whatever
+tool you prefer, the ISO file should be located at
+`result/iso/wind-tunnel-runner-auto-installer-<...>.iso`.
+
+Plug the USB into the machine you want to add and let it run automatically. You
+may need to change the boot order to make sure that the machine boots from the
+USB. The progress/status of the installation will be printed to `tty1` and the
+machine will shutdown once the installation is completed successfully. Once it
+has shutdown then remove the USB and reboot the machine.
+
+The new machine should be listed on the Tailscale dashboard at
+<https://login.tailscale.com/admin/machines>. You will may need to accept the
+machine to allow it access.
+
+You can change the name of the machine by selecting the `...` dropdown on the
+right of the machine and select `Edit machine name...`.
+
+Now that the machine is registered on Tailscale, navigate to
+<https://nomad-server-01.holochain.org:4646/ui/clients> and check that the
+machine is also in the list of available Nomad clients.
+
+Finally, add the new machine as a "node" to the `Colmena` definition in the
+[colmena.nix](colmena.nix) file, the name of the machine should match the name
+in the Tailscale dashboard.
+
+```nix
+inputs:
+let
+  targetSystem = "x86_64-linux";
+in
+{
+  # ...other config...
+
+  <your-machine-name> = _: { };
+}
+```
+
+Make sure that your machine's name is unique and add any custom configuration
+that you want for your machine.
+
+Create a PR for your changes and once it is merged then Colmena will manage the
+machine for you.
+
+### Manually
+
+#### Installing NixOS
 
 Go to <https://nixos.org/download/#nixos-iso> to get the ISO and install NixOS.
 
@@ -37,7 +104,7 @@ probably not needed so just select `No desktop` when asked.
 Once the installation is finished, remove the live-NixOS USB and restart the
 system.
 
-### Adding new machine
+#### Adding new machine
 
 The first step is to add a new machine "node" with a unique name to the
 `Colmena` definition in the [colmena.nix](colmena.nix).
@@ -68,7 +135,7 @@ differs from the default.
 
 Commit and push these changes to a new branch.
 
-#### Bootloader
+##### Bootloader
 
 > \[!Warning\]
 > HoloPorts seem to use GRUB and so you need to follow this section.
@@ -99,7 +166,7 @@ override the bootloader for your node only to switch to GRUB:
 };
 ```
 
-### Registering the new machine
+#### Registering the new machine
 
 Now that you have a branch with the definition of your new machine on it, make
 sure that the machine has internet access, preferably a wired one for
@@ -123,7 +190,7 @@ manager shared vault).
 Now navigate to <https://login.tailscale.com/admin/machines> and confirm that
 the new machine is there.
 
-#### Password Access
+##### Password Access
 
 > \[!Warning\]
 > The password is hashed with a random salt and SSH access is managed via
@@ -137,7 +204,7 @@ manually. You should not need the password as you can SSH via Tailscale without
 it but the password is in the password manager's shared vault under
 `Nomad Client Root Password`.
 
-##### Changing the Password
+###### Changing the Password
 
 To change the password, generate a new one in the password manager's shared
 vault and then use `mkpasswd` to generate the hash and set the value of
@@ -156,7 +223,7 @@ easier local access, you can override the default by setting
 };
 ```
 
-### Disable key expiration
+#### Disable key expiration
 
 By default all nodes need a new key every 90 days. For these machines it is
 recommended to instead set the key to never expire so that we don't need to
@@ -165,7 +232,7 @@ manually update the keys.
 To do this go to <https://login.tailscale.com/admin/machines> and select the
 `...` dropdown on the right of the machine and select `Disable key expiry`.
 
-### Checking the machine in Nomad
+#### Checking the machine in Nomad
 
 Now that the machine is registered on Tailscale, navigate to
 <https://nomad-server-01.holochain.org:4646/ui/clients> and check that the
