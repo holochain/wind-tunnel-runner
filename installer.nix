@@ -172,7 +172,7 @@ in
 
   isoImage.contents = [
     {
-      source = pkgs.writeText "tailscale_key" "<add Tailscale Key here>";
+      source = ./tailscale_key;
       target = "tailscale_key";
     }
   ];
