@@ -33,16 +33,20 @@ Click the `Generate auth key...` button and create a key with the `tag` of
 `nomad-client`, the other properties are up to you so enable `Reusable` if you
 want to use this live USB on multiple machines.
 
-Clone this repository and replace the contents of the
-[tailscale_key](tailscale_key) file with the key you just generated above.
+Clone this repository and create a `tailscale_key` file in the root with the
+contents of the file being the key you just generated above:
+
+```shell
+echo "<generated key>" > tailscale_key
+```
 
 > \[!Warning\]
-> Do not commit your changes to the `tailscale_key` file.
+> Do not commit or share the `tailscale_key` file.
 
 Generate the installation ISO by running:
 
 ```shell
-nix build .#installer-iso
+nix build path:.#installer-iso
 ```
 
 Create a live USB from the ISO you just generated with `dd`, or whatever
