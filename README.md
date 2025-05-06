@@ -33,8 +33,8 @@ Click the `Generate auth key...` button and create a key with the `tag` of
 `nomad-client`, the other properties are up to you so enable `Reusable` if you
 want to use this live USB on multiple machines.
 
-Replace the contents of [tailscale_key](tailscale_key) with the key you
-just generated above.
+Clone this repository and replace the contents of the
+[tailscale_key](tailscale_key) file with the key you just generated above.
 
 > \[!Warning\]
 > Do not commit your changes to the `tailscale_key` file.
@@ -49,22 +49,23 @@ Create a live USB from the ISO you just generated with `dd`, or whatever
 tool you prefer, the ISO file should be located at
 `result/iso/wind-tunnel-runner-auto-installer-<...>.iso`.
 
-Plug the USB into the machine you want to add and let it run automatically. You
+With the machine turned off, plug in the USB and let it run automatically. You
 may need to change the boot order to make sure that the machine boots from the
 USB. The progress/status of the installation will be printed to `tty1` and the
 machine will shutdown once the installation is completed successfully. Once it
 has shutdown then remove the USB and reboot the machine.
 
 The new machine should be listed on the Tailscale dashboard at
-<https://login.tailscale.com/admin/machines>. You will may need to accept the
-machine to allow it access.
-
-You can change the name of the machine by selecting the `...` dropdown on the
-right of the machine and select `Edit machine name...`.
+<https://login.tailscale.com/admin/machines> with the note `Needs approval`.
+To approve the machine, select the `...` dropdown on the right of the machine
+and select `Approve`. You can also change the name of the machine in this menu
+by selecting `Edit machine name...`.
 
 Now that the machine is registered on Tailscale, navigate to
 <https://nomad-server-01.holochain.org:4646/ui/clients> and check that the
-machine is also in the list of available Nomad clients.
+machine is also in the list of available Nomad clients, note that this will
+currently show the original name and not the new name if you changed it. The
+new name will take effect once Colmena applies its changes.
 
 Finally, add the new machine as a "node" to the `Colmena` definition in the
 [colmena.nix](colmena.nix) file, the name of the machine should match the name
