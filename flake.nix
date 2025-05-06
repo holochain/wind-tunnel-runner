@@ -51,7 +51,6 @@
         };
       };
 
-
       devShells.default = pkgs.mkShell {
         packages = with pkgs; [
           self'.checks.pre-commit.enabledPackages
