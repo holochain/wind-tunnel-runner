@@ -149,6 +149,7 @@ in
         wait-for [ -b /dev/disk/by-label/nixos ]
         mount /dev/disk/by-label/nixos /mnt
 
+        wait-for [ -b /dev/disk/by-label/boot ]
         ${coreutils-full}/bin/mkdir -p /mnt/boot
         mount -o umask=077 /dev/disk/by-label/boot /mnt/boot
 
