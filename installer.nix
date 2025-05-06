@@ -69,10 +69,11 @@ in
       wait-for() {
         for _ in $(seq 10); do
           if $@; then
-            break
+            return
           fi
           sleep 1
         done
+        exit 1
       }
 
       install-legacy() {
