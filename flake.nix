@@ -103,7 +103,7 @@
 
         apply = pkgs.writeShellApplication {
           name = "apply-script";
-          text = "${pkgs.colmena}/bin/colmena apply";
+          text = "${pkgs.colmena}/bin/colmena apply --reboot";
         };
 
         installer-iso = inputs.self.nixosConfigurations.installer.config.system.build.isoImage;
