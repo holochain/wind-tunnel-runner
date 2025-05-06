@@ -135,10 +135,13 @@ in
 
         ${coreutils-full}/bin/sync
 
+        wait-for [ -b /dev/disk/by-partlabel/nixos ]
         ${e2fsprogs}/bin/mkfs.ext4 -L nixos /dev/disk/by-partlabel/nixos
 
+        wait-for [ -b /dev/disk/by-partlabel/swap ]
         ${util-linux}/bin/mkswap -L swap /dev/disk/by-partlabel/swap
 
+        wait-for [ -b /dev/disk/by-partlabel/boot ]
         ${dosfstools}/bin/mkfs.fat -F 32 -n boot /dev/disk/by-partlabel/boot
 
         ${coreutils-full}/bin/sync
