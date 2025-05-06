@@ -63,38 +63,40 @@ in
     extraUsers.root.hashedPassword = mkBaseDefault "$y$j9T$LEwPZpyLzb3CKDBEtAi.w1$Uxok0mk4i5AWJ0zbPaqfY6T7Bw5nNYteu69yxqD7Mg/";
   };
 
-  # Enable Tailscale, used for SSH access
-  services.tailscale = {
-    enable = true;
-    authKeyFile = "/root/secrets/tailscale_key";
-    extraUpFlags = [ "--ssh" "--advertise-tags=tag:nomad-client" ];
-  };
+  services = {
+    # Enable Tailscale, used for SSH access
+    tailscale = {
+      enable = true;
+      authKeyFile = "/root/secrets/tailscale_key";
+      extraUpFlags = [ "--ssh" "--advertise-tags=tag:nomad-client" ];
+    };
 
-  # Enable Nomad as a client node
-  services.nomad = {
-    enable = true;
-    dropPrivileges = false; # Clients require root privileges
+    # Enable Nomad as a client node
+    nomad = {
+      enable = true;
+      dropPrivileges = false; # Clients require root privileges
 
-    extraPackages = with pkgs; [
-      coreutils
-      bash
-      hexdump
-      gnutar
-      bzip2
-      telegraf
-      # Enable unstable and non-default features that Wind Tunnel tests.
-      (inputs.holonix.packages.x86_64-linux.holochain.override { cargoExtraArgs = "--features chc,unstable-functions,unstable-countersigning"; })
-    ];
+      extraPackages = with pkgs; [
+        coreutils
+        bash
+        hexdump
+        gnutar
+        bzip2
+        telegraf
+        # Enable unstable and non-default features that Wind Tunnel tests.
+        (inputs.holonix.packages.x86_64-linux.holochain.override { cargoExtraArgs = "--features chc,unstable-functions,unstable-countersigning"; })
+      ];
 
-    # The Nomad configuration file
-    settings = {
-      data_dir = "/var/lib/nomad";
-      plugin.raw_exec.config.enabled = true;
-      acl.enabled = true;
-      client = {
-        enabled = true;
-        servers = [ "nomad-server-01.holochain.org" ];
-        artifact.disable_filesystem_isolation = true;
+      # The Nomad configuration file
+      settings = {
+        data_dir = "/var/lib/nomad";
+        plugin.raw_exec.config.enabled = true;
+        acl.enabled = true;
+        client = {
+          enabled = true;
+          servers = [ "nomad-server-01.holochain.org" ];
+          artifact.disable_filesystem_isolation = true;
+        };
       };
     };
   };
