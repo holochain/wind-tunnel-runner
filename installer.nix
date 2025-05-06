@@ -178,7 +178,11 @@ in
 
   isoImage.contents = [
     {
-      source = ./tailscale_key;
+      source =
+        if builtins.pathExists ./tailscale_key then
+          ./tailscale_key
+        else
+          pkgs.writeText "tailscale_key" "No tailscale_key file was provided";
       target = "tailscale_key";
     }
   ];
