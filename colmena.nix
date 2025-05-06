@@ -66,4 +66,7 @@ in
   };
 
   nomad-client-cdunster = _: { };
+
+  nomad-client-zippy-hp-2 = _: { };
+
 }
