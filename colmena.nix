@@ -64,4 +64,6 @@ in
       };
     };
   };
+
+  nomad-client-cdunster = _: { };
 }
