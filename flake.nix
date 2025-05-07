@@ -51,7 +51,6 @@
         };
       };
 
-
       devShells.default = pkgs.mkShell {
         packages = with pkgs; [
           self'.checks.pre-commit.enabledPackages
@@ -103,11 +102,19 @@
 
         apply = pkgs.writeShellApplication {
           name = "apply-script";
-          text = "${pkgs.colmena}/bin/colmena apply";
+          text = "${pkgs.colmena}/bin/colmena apply --reboot";
         };
+
+        installer-iso = inputs.self.nixosConfigurations.installer.config.system.build.isoImage;
       };
     };
 
     flake.colmena = import ./colmena.nix inputs;
+
+    flake.nixosConfigurations.installer = inputs.nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = [ ./installer.nix ];
+      specialArgs = { inherit inputs; };
+    };
   };
 }

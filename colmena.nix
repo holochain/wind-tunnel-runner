@@ -8,81 +8,28 @@ in
       system = targetSystem;
       config.allowUnfreePredicate = pkg: builtins.elem (inputs.nixpkgs.lib.getName pkg) [ "nomad" ];
     };
+    specialArgs = { inherit inputs; };
   };
 
-  defaults = { name, pkgs, lib, ... }: {
+  defaults = { name, lib, ... }: {
+    imports = [ ./base-install.nix ];
+
     deployment = {
       allowLocalDeployment = true;
     };
 
-    nix = {
-      # Extra lines to be added to /etc/nix/nix.conf
-      extraOptions = "experimental-features = nix-command flakes";
-
-      # Add wind-tunnel substituters
-      settings = {
-        substituters = [ "https://cache.nixos.org" "https://holochain-ci.cachix.org" "https://holochain-wind-tunnel.cachix.org" ];
-        trusted-public-keys = [ "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=" "holochain-ci.cachix.org-1:5IUSkZc0aoRS53rfkvH9Kid40NpyjwCMCzwRTXy+QN8=" "holochain-wind-tunnel.cachix.org-1:tnSm+7Y3hDKOc9xLdoVMuInMA2AQ0R/99Ucz5edYGJw=" ];
-      };
-    };
-
-    system.stateVersion = "24.11";
-
     networking.hostName = name;
 
     boot.loader = lib.mkDefault {
+      grub.enable = false;
       systemd-boot.enable = true;
       efi.canTouchEfiVariables = true;
-    };
-
-    users = {
-      mutableUsers = false;
-      users.root.hashedPassword = lib.mkDefault "$y$j9T$LEwPZpyLzb3CKDBEtAi.w1$Uxok0mk4i5AWJ0zbPaqfY6T7Bw5nNYteu69yxqD7Mg/";
-    };
-
-    services.tailscale = {
-      enable = true;
-    };
-
-    services.nomad = {
-      enable = true;
-      dropPrivileges = false; # Clients require root privileges
-
-      extraPackages = with pkgs; [
-        coreutils
-        bash
-        hexdump
-        gnutar
-        bzip2
-        telegraf
-        # Enable unstable and non-default features that Wind Tunnel tests.
-        (inputs.holonix.packages.${targetSystem}.holochain.override { cargoExtraArgs = "--features chc,unstable-functions,unstable-countersigning"; })
-      ];
-
-      # The Nomad configuration file
-      settings = {
-        data_dir = "/var/lib/nomad";
-        plugin.raw_exec.config.enabled = true;
-        acl.enabled = true;
-        client = {
-          enabled = true;
-          servers = [ "nomad-server-01.holochain.org" ];
-          artifact.disable_filesystem_isolation = true;
-        };
-      };
     };
   };
 
   nomad-client-1 = _: {
     fileSystems."/" = {
       device = "/dev/disk/by-uuid/a92690a8-d96c-4305-bfd9-ac4cf7f1c9e6";
-      fsType = "ext4";
-    };
-  };
-
-  nomad-client-2 = _: {
-    fileSystems."/" = {
-      device = "/dev/disk/by-uuid/8dabb938-b5e5-4b81-8cd7-65266e25fd37";
       fsType = "ext4";
     };
   };
@@ -117,4 +64,6 @@ in
       };
     };
   };
+
+  nomad-client-cdunster = _: { };
 }

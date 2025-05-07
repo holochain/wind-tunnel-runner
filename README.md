@@ -23,7 +23,93 @@ then please ignore these instructions.
 
 ## Adding a node
 
-### Installing NixOS
+### Using Auto-installation ISO
+
+Navigate to <https://login.tailscale.com/admin/settings/keys> and login with
+GitHub using the `holochain-release-automation2` account (credentials in the
+shared password manager).
+
+Click the `Generate auth key...` button and create a new key with the following properties:
+
+- `Description`: Set to something like "Key to register \<name>'s machine"
+- `Reusable`: Enable if you want to use the same key, and therefore the same
+  ISO, to register multiple machines.
+- `Expiration`: How long you want the **key** to be valid. It does not affect
+  the expiration of the machine itself, just the key.
+- `Ephemeral`: Leave this disabled.
+- `Pre-approved`: Leave this disabled.
+- `Tags`: This **must** be set to `nomad-client`.
+
+Clone this repository and create a `tailscale_key` file in the root with the
+contents of the file being the key you just generated above:
+
+```shell
+echo "<generated key>" > tailscale_key
+```
+
+> \[!Warning\]
+> Do not commit or share the `tailscale_key` file.
+
+Generate the installation ISO by running:
+
+```shell
+nix build path:.#installer-iso
+```
+
+Create a live USB from the ISO you just generated with `dd`, or whatever
+tool you prefer, the ISO file should be located at
+`result/iso/wind-tunnel-runner-auto-installer-<...>.iso`.
+
+With the machine turned off, plug in the USB and let it run automatically. You
+may need to change the boot order to make sure that the machine boots from the
+USB. The progress/status of the installation will be printed to `tty1` and the
+machine will shutdown once the installation is completed successfully. Once it
+has shutdown then remove the USB and reboot the machine.
+
+The new machine should be listed on the Tailscale dashboard at
+<https://login.tailscale.com/admin/machines> with the note `Needs approval`.
+To approve the machine, select the `...` dropdown on the right of the machine
+and select `Approve`.
+
+Change the name of the machine/node in Tailscale by selecting the `...`
+dropdown on the right of the machine and select `Edit machine name...`. The
+name should be unique and recognisable so that you know which node belongs to
+you, something like `nomad-client-<user>` is common practice with a base-one
+index after it, if you have multiple machines, i.e.
+`nomad-client-<user>-<index>`.
+
+> \[!Note\]
+> Changing the node name in Tailscale will not immediately change the hostname
+> of the machine, but this will happen after a `colmena apply` which happens
+> automatically after the PR is merged to `main`.
+
+Finally, add the new machine as a "node" to the `Colmena` definition in the
+[colmena.nix](colmena.nix) file, the name of the machine should match the name
+in the Tailscale dashboard.
+
+```nix
+inputs:
+let
+  targetSystem = "x86_64-linux";
+in
+{
+  # ...other config...
+
+  <your-machine-name> = _: { };
+}
+```
+
+Make sure to add any custom configuration that you want for your machine, this
+can be any valid NixOS configuration including things like SSH keys, if you want
+local access without using Tailscale, or a Desktop Environment.
+
+Create a PR for your changes and once it is merged then Colmena will manage the
+machine for you and you will see it listed as a client in the Nomad dashboard
+at <https://nomad-server-01.holochain.org:4646/ui/clients>.
+
+### Manually
+
+#### Installing NixOS
 
 Go to <https://nixos.org/download/#nixos-iso> to get the ISO and install NixOS.
 
@@ -37,7 +123,7 @@ probably not needed so just select `No desktop` when asked.
 Once the installation is finished, remove the live-NixOS USB and restart the
 system.
 
-### Adding new machine
+#### Adding new machine
 
 The first step is to add a new machine "node" with a unique name to the
 `Colmena` definition in the [colmena.nix](colmena.nix).
@@ -68,7 +154,7 @@ differs from the default.
 
 Commit and push these changes to a new branch.
 
-#### Bootloader
+##### Bootloader
 
 > \[!Warning\]
 > HoloPorts seem to use GRUB and so you need to follow this section.
@@ -99,7 +185,7 @@ override the bootloader for your node only to switch to GRUB:
 };
 ```
 
-### Registering the new machine
+#### Registering the new machine
 
 Now that you have a branch with the definition of your new machine on it, make
 sure that the machine has internet access, preferably a wired one for
@@ -123,7 +209,7 @@ manager shared vault).
 Now navigate to <https://login.tailscale.com/admin/machines> and confirm that
 the new machine is there.
 
-#### Password Access
+##### Password Access
 
 > \[!Warning\]
 > The password is hashed with a random salt and SSH access is managed via
@@ -137,7 +223,7 @@ manually. You should not need the password as you can SSH via Tailscale without
 it but the password is in the password manager's shared vault under
 `Nomad Client Root Password`.
 
-##### Changing the Password
+###### Changing the Password
 
 To change the password, generate a new one in the password manager's shared
 vault and then use `mkpasswd` to generate the hash and set the value of
@@ -156,7 +242,7 @@ easier local access, you can override the default by setting
 };
 ```
 
-### Disable key expiration
+#### Disable key expiration
 
 By default all nodes need a new key every 90 days. For these machines it is
 recommended to instead set the key to never expire so that we don't need to
@@ -165,7 +251,7 @@ manually update the keys.
 To do this go to <https://login.tailscale.com/admin/machines> and select the
 `...` dropdown on the right of the machine and select `Disable key expiry`.
 
-### Checking the machine in Nomad
+#### Checking the machine in Nomad
 
 Now that the machine is registered on Tailscale, navigate to
 <https://nomad-server-01.holochain.org:4646/ui/clients> and check that the
