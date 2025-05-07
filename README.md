@@ -83,12 +83,6 @@ index after it, if you have multiple machines, i.e.
 > of the machine, but this will happen after a `colmena apply` which happens
 > automatically after the PR is merged to `main`.
 
-Now that the machine is registered on Tailscale, navigate to
-<https://nomad-server-01.holochain.org:4646/ui/clients> and check that the
-machine is also in the list of available Nomad clients, note that this will
-currently show the original name and not the new name if you changed it. The
-new name will take effect once Colmena applies its changes.
-
 Finally, add the new machine as a "node" to the `Colmena` definition in the
 [colmena.nix](colmena.nix) file, the name of the machine should match the name
 in the Tailscale dashboard.
@@ -110,7 +104,8 @@ can be any valid NixOS configuration including things like SSH keys, if you want
 local access without using Tailscale, or a Desktop Environment.
 
 Create a PR for your changes and once it is merged then Colmena will manage the
-machine for you.
+machine for you and you will see it listed as a client in the Nomad dashboard
+at <https://nomad-server-01.holochain.org:4646/ui/clients>.
 
 ### Manually
 
