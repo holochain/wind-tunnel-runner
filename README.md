@@ -29,9 +29,16 @@ Navigate to <https://login.tailscale.com/admin/settings/keys> and login with
 GitHub using the `holochain-release-automation2` account (credentials in the
 shared password manager).
 
-Click the `Generate auth key...` button and create a key with the `tag` of
-`nomad-client`, the other properties are up to you so enable `Reusable` if you
-want to use this live USB on multiple machines.
+Click the `Generate auth key...` button and create a new key with the following properties:
+
+- `Description`: Set to something like "Key to register \<name>'s machine"
+- `Reusable`: Enable if you want to use the same key, and therefore the same
+  ISO, to register multiple machines.
+- `Expiration`: How long you want the **key** to be valid. It does not affect
+  the expiration of the machine itself, just the key.
+- `Ephemeral`: Leave this disabled.
+- `Pre-approved`: Leave this disabled.
+- `Tags`: This **must** be set to `nomad-client`.
 
 Clone this repository and create a `tailscale_key` file in the root with the
 contents of the file being the key you just generated above:
