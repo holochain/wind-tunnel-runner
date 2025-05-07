@@ -69,8 +69,19 @@ has shutdown then remove the USB and reboot the machine.
 The new machine should be listed on the Tailscale dashboard at
 <https://login.tailscale.com/admin/machines> with the note `Needs approval`.
 To approve the machine, select the `...` dropdown on the right of the machine
-and select `Approve`. You can also change the name of the machine in this menu
-by selecting `Edit machine name...`.
+and select `Approve`.
+
+Change the name of the machine/node in Tailscale by selecting the `...`
+dropdown on the right of the machine and select `Edit machine name...`. The
+name should be unique and recognisable so that you know which node belongs to
+you, something like `nomad-client-<user>` is common practice with a base-one
+index after it, if you have multiple machines, i.e.
+`nomad-client-<user>-<index>`.
+
+> \[!Note\]
+> Changing the node name in Tailscale will not immediately change the hostname
+> of the machine, but this will happen after a `colmena apply` which happens
+> automatically after the PR is merged to `main`.
 
 Now that the machine is registered on Tailscale, navigate to
 <https://nomad-server-01.holochain.org:4646/ui/clients> and check that the
