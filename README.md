@@ -94,8 +94,9 @@ in
 }
 ```
 
-Make sure that your machine's name is unique and add any custom configuration
-that you want for your machine.
+Make sure to add any custom configuration that you want for your machine, this
+can be any valid NixOS configuration including things like SSH keys, if you want
+local access without using Tailscale, or a Desktop Environment.
 
 Create a PR for your changes and once it is merged then Colmena will manage the
 machine for you.
