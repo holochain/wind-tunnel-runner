@@ -29,9 +29,16 @@ Navigate to <https://login.tailscale.com/admin/settings/keys> and login with
 GitHub using the `holochain-release-automation2` account (credentials in the
 shared password manager).
 
-Click the `Generate auth key...` button and create a key with the `tag` of
-`nomad-client`, the other properties are up to you so enable `Reusable` if you
-want to use this live USB on multiple machines.
+Click the `Generate auth key...` button and create a new key with the following properties:
+
+- `Description`: Set to something like "Key to register \<name>'s machine"
+- `Reusable`: Enable if you want to use the same key, and therefore the same
+  ISO, to register multiple machines.
+- `Expiration`: How long you want the **key** to be valid. It does not affect
+  the expiration of the machine itself, just the key.
+- `Ephemeral`: Leave this disabled.
+- `Pre-approved`: Leave this disabled.
+- `Tags`: This **must** be set to `nomad-client`.
 
 Clone this repository and create a `tailscale_key` file in the root with the
 contents of the file being the key you just generated above:
@@ -62,8 +69,19 @@ has shutdown then remove the USB and reboot the machine.
 The new machine should be listed on the Tailscale dashboard at
 <https://login.tailscale.com/admin/machines> with the note `Needs approval`.
 To approve the machine, select the `...` dropdown on the right of the machine
-and select `Approve`. You can also change the name of the machine in this menu
-by selecting `Edit machine name...`.
+and select `Approve`.
+
+Change the name of the machine/node in Tailscale by selecting the `...`
+dropdown on the right of the machine and select `Edit machine name...`. The
+name should be unique and recognisable so that you know which node belongs to
+you, something like `nomad-client-<user>` is common practice with a base-one
+index after it, if you have multiple machines, i.e.
+`nomad-client-<user>-<index>`.
+
+> \[!Note\]
+> Changing the node name in Tailscale will not immediately change the hostname
+> of the machine, but this will happen after a `colmena apply` which happens
+> automatically after the PR is merged to `main`.
 
 Now that the machine is registered on Tailscale, navigate to
 <https://nomad-server-01.holochain.org:4646/ui/clients> and check that the
@@ -87,8 +105,9 @@ in
 }
 ```
 
-Make sure that your machine's name is unique and add any custom configuration
-that you want for your machine.
+Make sure to add any custom configuration that you want for your machine, this
+can be any valid NixOS configuration including things like SSH keys, if you want
+local access without using Tailscale, or a Desktop Environment.
 
 Create a PR for your changes and once it is merged then Colmena will manage the
 machine for you.
