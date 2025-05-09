@@ -70,6 +70,6 @@ in
   jost-test-os-terone = _: { };
 
   nomad-client-zippy-hp-2 = _: { };
-  
+
   nomad-client-zippy-hp-3 = _: { };
 }
