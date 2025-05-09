@@ -67,10 +67,9 @@ in
 
   nomad-client-cdunster = _: { };
 
-  jost-test-os-terone = _: {
-    fileSystems."/" = {
-      device = "/dev/disk/by-uuid/7b99b518-aaac-4204-9c3c-131f26d11e0a";
-      fsType = "ext4";
-    };
-  };
+  jost-test-os-terone = _: { };
+
+  nomad-client-zippy-hp-2 = _: { };
+  
+  nomad-client-zippy-hp-3 = _: { };
 }
