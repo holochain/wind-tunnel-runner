@@ -71,12 +71,13 @@ The new machine should be listed on the Tailscale dashboard at
 To approve the machine, select the `...` dropdown on the right of the machine
 and select `Approve`.
 
-Change the name of the machine/node in Tailscale by selecting the `...`
-dropdown on the right of the machine and select `Edit machine name...`. The
-name should be unique and recognisable so that you know which node belongs to
-you, something like `nomad-client-<user>` is common practice with a base-one
-index after it, if you have multiple machines, i.e.
-`nomad-client-<user>-<index>`.
+Take note of whether the node is called `nomad-client-uefi` or
+`nomad-client-no-uefi`, as this will be important later. Then, change the name
+of the machine/node in Tailscale by selecting the `...` dropdown on the right
+of the machine and select `Edit machine name...`. The name should be unique and
+recognisable so that you know which node belongs to you, something like
+`nomad-client-<user>` is common practice with a base-one index after it, if you
+have multiple machines, i.e. `nomad-client-<user>-<index>`.
 
 > \[!Note\]
 > Changing the node name in Tailscale will not immediately change the hostname
@@ -85,7 +86,10 @@ index after it, if you have multiple machines, i.e.
 
 Finally, add the new machine as a "node" to the `Colmena` definition in the
 [colmena.nix](colmena.nix) file, the name of the machine should match the name
-in the Tailscale dashboard.
+in the Tailscale dashboard and the value of `isUEFI` should be set based on the
+original machine name where it should be set to `true` if the name was
+`nomad-client-uefi` and `false` if the original name was
+`nomad-client-no-uefi`.
 
 ```nix
 inputs:
@@ -95,7 +99,10 @@ in
 {
   # ...other config...
 
-  <your-machine-name> = _: { };
+  <your-machine-name> = _: {
+    isUEFI = true; # if name was `nomad-client-uefi`
+    isUEFI = false; # if name was `nomad-client-no-uefi`
+  };
 }
 ```
 
@@ -141,6 +148,8 @@ in
   # ...other config...
 
   <your-machine-name> = _: {
+    isUEFI = true;
+
     fileSystems."/" = {
       device = "/dev/disk/by-uuid/<uuid-of-main-drive>";
       fsType = "ext4";
@@ -174,12 +183,11 @@ override the bootloader for your node only to switch to GRUB:
 <your-machine-name> = _: {
   # ...other config...
 
+  isUEFI = false; # This will use GRUB instead of systemd-boot as the bootloader
+
   boot.loader = {
-    systemd-boot.enable = false;
     grub = {
-      enable = true;
-      device = "/dev/sda";  # Change to mounted drive where GRUB is/should be installed
-      # useOSProber = true; # Uncomment if dual-booting with another OS
+      # Override GRUB settings here if required.
     };
   };
 };
