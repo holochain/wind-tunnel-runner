@@ -54,15 +54,6 @@ in
       device = "/dev/disk/by-uuid/8cd1f3a9-c743-42de-833a-6b9769ebd758";
       fsType = "ext4";
     };
-
-    boot.loader = {
-      systemd-boot.enable = false;
-      grub = {
-        enable = true;
-        device = "/dev/sda";
-        useOSProber = true;
-      };
-    };
   };
 
   nomad-client-cdunster = _: {
