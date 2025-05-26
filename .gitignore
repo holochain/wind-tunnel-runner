@@ -6,3 +6,6 @@
 
 # Ignore so that we don't accidentally leak a private Tailscale key
 tailscale_key
+
+# Ignore the result directory of an ISO build so we don't commit it!
+result
