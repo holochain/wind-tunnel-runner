@@ -148,6 +148,8 @@ in
   # ...other config...
 
   <your-machine-name> = _: {
+    isUEFI = true;
+
     fileSystems."/" = {
       device = "/dev/disk/by-uuid/<uuid-of-main-drive>";
       fsType = "ext4";
@@ -181,12 +183,11 @@ override the bootloader for your node only to switch to GRUB:
 <your-machine-name> = _: {
   # ...other config...
 
+  isUEFI = false; # This will use GRUB instead of systemd-boot as the bootloader
+
   boot.loader = {
-    systemd-boot.enable = false;
     grub = {
-      enable = true;
-      device = "/dev/sda";  # Change to mounted drive where GRUB is/should be installed
-      # useOSProber = true; # Uncomment if dual-booting with another OS
+      # Override GRUB settings here if required.
     };
   };
 };
