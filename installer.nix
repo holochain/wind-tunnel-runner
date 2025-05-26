@@ -4,13 +4,7 @@ let
     system = "x86_64-linux";
     modules = [
       ./base-install.nix
-      {
-        # Enable the GRUB bootloader and install it on `sda` drive
-        boot.loader.grub = {
-          enable = true;
-          device = "/dev/sda";
-        };
-      }
+      { isUEFI = false; }
     ];
     specialArgs = { inherit inputs; };
   };
@@ -18,13 +12,7 @@ let
     system = "x86_64-linux";
     modules = [
       ./base-install.nix
-      {
-        # Enable the systemd-boot bootloader with UEFI support
-        boot.loader = {
-          systemd-boot.enable = true;
-          efi.canTouchEfiVariables = true;
-        };
-      }
+      { isUEFI = true; }
     ];
     specialArgs = { inherit inputs; };
   };
