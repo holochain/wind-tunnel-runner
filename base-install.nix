@@ -64,7 +64,7 @@ in
 
     networking = {
       # Set the default machine's name
-      hostName = mkBaseDefault "nomad-client";
+      hostName = mkBaseDefault (if config.isUEFI then "nomad-client-uefi" else "nomad-client-no-uefi");
 
       # Enable DHCP for all network devices
       useDHCP = true;
