@@ -23,7 +23,7 @@ in
   ];
 
   isoImage = {
-    isoBaseName = "wind-tunnel-runner-auto-installer";
+    isoBaseName = lib.mkForce "wind-tunnel-runner-auto-installer";
     volumeID = "wind-tunnel-runner-installer";
   };
 

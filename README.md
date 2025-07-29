@@ -47,7 +47,7 @@ contents of the file being the key you just generated above:
 echo "<generated key>" > tailscale_key
 ```
 
-> \[!Warning\]
+> [!Warning]
 > Do not commit or share the `tailscale_key` file.
 
 Generate the installation ISO by running:
@@ -79,7 +79,7 @@ recognisable so that you know which node belongs to you, something like
 `nomad-client-<user>` is common practice with a base-one index after it, if you
 have multiple machines, i.e. `nomad-client-<user>-<index>`.
 
-> \[!Note\]
+> [!Note]
 > Changing the node name in Tailscale will not immediately change the hostname
 > of the machine, but this will happen after a `colmena apply` which happens
 > automatically after the PR is merged to `main`.
@@ -165,7 +165,7 @@ Commit and push these changes to a new branch.
 
 ##### Bootloader
 
-> \[!Warning\]
+> [!Warning]
 > HoloPorts seem to use GRUB and so you need to follow this section.
 
 By default, systemd-boot is used as the bootloader. If your system already has
@@ -201,7 +201,7 @@ stability.
 
 Then, log into the machine with the root account and run the command:
 
-> \[!Warning\]
+> [!Warning]
 > Must use the `root` account as all other accounts will be deleted during
 > installation.
 
@@ -219,7 +219,7 @@ the new machine is there.
 
 ##### Password Access
 
-> \[!Warning\]
+> [!Warning]
 > The password is hashed with a random salt and SSH access is managed via
 > Tailscale so it should be safe enough to share. However, know that if you
 > allow access to this machine to the public then password access via SSH
