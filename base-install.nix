@@ -115,6 +115,7 @@ in
           telegraf
           # Enable unstable and non-default features that Wind Tunnel tests.
           (inputs.holonix.packages.x86_64-linux.holochain.override { cargoExtraArgs = "--features chc,unstable-functions,unstable-countersigning"; })
+          inputs.holonix.packages.x86_64-linux.hc
         ];
 
         # The Nomad configuration file
