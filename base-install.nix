@@ -107,11 +107,12 @@ in
         dropPrivileges = false; # Clients require root privileges
 
         extraPackages = with pkgs; [
-          coreutils
           bash
-          hexdump
-          gnutar
           bzip2
+          coreutils
+          gnutar
+          hexdump
+          jq
           telegraf
           # Enable unstable and non-default features that Wind Tunnel tests.
           (inputs.holonix.packages.x86_64-linux.holochain.override { cargoExtraArgs = "--features chc,unstable-functions,unstable-countersigning"; })
