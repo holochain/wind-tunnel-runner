@@ -71,4 +71,13 @@ in
   nomad-client-zippy-hp-3 = _: {
     isUEFI = false;
   };
+
+  nomad-client-zippy-hp-4 = _: {
+    isUEFI = false;
+  };
+
+  nomad-client-zippy-hp-5 = _: {
+    isUEFI = false;
+  };
+
 }
