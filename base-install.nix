@@ -2,6 +2,19 @@
 let
   # Set a value with a lower priority than `lib.mkDefault`
   mkBaseDefault = value: lib.mkOverride 1200 value;
+
+  lp-tool = pkgs.buildGoModule {
+    pname = "lp-tool";
+    version = "0.1.0";
+    src = pkgs.fetchgit {
+      url = "https://github.com/holochain/wind-tunnel.git";
+      rev = "6479de9854b9685d9c73a1f8b7a173b01fbf2a6a";
+      sha256 = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+    };
+    subdir = "lp-tool";
+    vendorHash = "sha256-7IGJGP2K0H0eKYU+gveykhGYt9ZufJNBUEv3jM66Wt0=";
+  };
+
 in
 {
   options.isUEFI = lib.mkOption {
@@ -78,6 +91,10 @@ in
       extraUsers.root.hashedPassword = mkBaseDefault "$y$j9T$LEwPZpyLzb3CKDBEtAi.w1$Uxok0mk4i5AWJ0zbPaqfY6T7Bw5nNYteu69yxqD7Mg/";
     };
 
+    environment.systemPackages = with pkgs; [
+      lp-tool
+    ];
+
     services = {
       getty.helpLine = ''
         ██╗    ██╗██╗███╗   ██╗██████╗     ████████╗██╗   ██╗███╗   ██╗███╗   ██╗███████╗██╗
@@ -112,6 +129,7 @@ in
           coreutils
           gnutar
           hexdump
+          influxdb2-cli
           jq
           telegraf
           # Enable unstable and non-default features that Wind Tunnel tests.
