@@ -6,12 +6,13 @@ let
   lp-tool = pkgs.buildGoModule {
     pname = "lp-tool";
     version = "0.1.0";
-    src = pkgs.fetchFromGitHub {
-      owner = "holochain";
-      repo = "wind-tunnel";
-      rev = "6479de9854b9685d9c73a1f8b7a173b01fbf2a6a";
-      sha256 = "sha256-Hfk5Du9uq8xboecFkkIZFKT5n7y146qGE1vEd6CiU/E=";
-    } + "/lp-tool";
+    src = pkgs.fetchFromGitHub
+      {
+        owner = "holochain";
+        repo = "wind-tunnel";
+        rev = "6479de9854b9685d9c73a1f8b7a173b01fbf2a6a";
+        sha256 = "sha256-Hfk5Du9uq8xboecFkkIZFKT5n7y146qGE1vEd6CiU/E=";
+      } + "/lp-tool";
     subdir = "lp-tool";
     vendorHash = "sha256-7IGJGP2K0H0eKYU+gveykhGYt9ZufJNBUEv3jM66Wt0=";
   };
