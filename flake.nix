@@ -9,6 +9,7 @@
       url = "github:cachix/pre-commit-hooks.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    wind-tunnel.url = "github:holochain/wind-tunnel/main";
   };
 
   outputs = inputs: inputs.flake-parts.lib.mkFlake { inherit inputs; } {
