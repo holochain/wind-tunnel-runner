@@ -78,10 +78,6 @@ in
       extraUsers.root.hashedPassword = mkBaseDefault "$y$j9T$LEwPZpyLzb3CKDBEtAi.w1$Uxok0mk4i5AWJ0zbPaqfY6T7Bw5nNYteu69yxqD7Mg/";
     };
 
-    environment.systemPackages = [
-      inputs.wind-tunnel.packages.x86_64-linux.lp-tool
-    ];
-
     services = {
       getty.helpLine = ''
         ██╗    ██╗██╗███╗   ██╗██████╗     ████████╗██╗   ██╗███╗   ██╗███╗   ██╗███████╗██╗
@@ -122,6 +118,7 @@ in
           # Enable unstable and non-default features that Wind Tunnel tests.
           (inputs.holonix.packages.x86_64-linux.holochain.override { cargoExtraArgs = "--features chc,unstable-functions,unstable-countersigning"; })
           inputs.holonix.packages.x86_64-linux.hc
+          inputs.wind-tunnel.packages.x86_64-linux.lp-tool
         ];
 
         # The Nomad configuration file
