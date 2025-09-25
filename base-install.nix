@@ -78,6 +78,9 @@ in
       extraUsers.root.hashedPassword = mkBaseDefault "$y$j9T$LEwPZpyLzb3CKDBEtAi.w1$Uxok0mk4i5AWJ0zbPaqfY6T7Bw5nNYteu69yxqD7Mg/";
     };
 
+    # Run dynamically-linked binaries such as Holochain on NixOS
+    programs.nix-ld.enable = true;
+
     services = {
       getty.helpLine = ''
         ██╗    ██╗██╗███╗   ██╗██████╗     ████████╗██╗   ██╗███╗   ██╗███╗   ██╗███████╗██╗
