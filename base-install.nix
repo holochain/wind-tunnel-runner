@@ -115,9 +115,6 @@ in
           influxdb2-cli
           jq
           telegraf
-          # Enable unstable and non-default features that Wind Tunnel tests.
-          (inputs.holonix.packages.x86_64-linux.holochain.override { cargoExtraArgs = "--features chc,unstable-functions,unstable-countersigning"; })
-          inputs.holonix.packages.x86_64-linux.hc
           inputs.wind-tunnel.packages.x86_64-linux.lp-tool
         ];
 

@@ -2,9 +2,8 @@
   description = "NixOS configuration for a Nomad client, deployed using Colmena";
 
   inputs = {
-    holonix.url = "github:holochain/holonix?ref=main-0.5";
-    nixpkgs.follows = "holonix/nixpkgs";
-    flake-parts.follows = "holonix/flake-parts";
+    nixpkgs.follows = "wind-tunnel/nixpkgs";
+    flake-parts.follows = "wind-tunnel/flake-parts";
     pre-commit-hooks = {
       url = "github:cachix/pre-commit-hooks.nix";
       inputs.nixpkgs.follows = "nixpkgs";
