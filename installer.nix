@@ -55,7 +55,7 @@ in
     script = with pkgs; ''
       set -euxo pipefail
 
-      wait-for() {
+      wait_for() {
         for _ in $(seq 10); do
           if $@; then
             return
@@ -65,7 +65,7 @@ in
         exit 1
       }
 
-      install-legacy() {
+      install_legacy() {
         echo "Legacy/BIOS system detected"
 
         if [ ! -b /dev/sda ]; then
@@ -86,7 +86,7 @@ in
 
         ${coreutils-full}/bin/sync
 
-        wait-for [ -b /dev/disk/by-label/nixos ]
+        wait_for [ -b /dev/disk/by-label/nixos ]
         mount /dev/disk/by-label/nixos /mnt
 
         ${util-linux}/bin/swapon /dev/sda2
@@ -100,7 +100,7 @@ in
         ${coreutils-full}/bin/cp /iso/tailscale_key /mnt/root/secrets/tailscale_key
       }
 
-      install-uefi() {
+      install_uefi() {
         echo "UEFI system detected"
 
         [ -b /dev/sda ] && dev=/dev/sda
@@ -124,25 +124,25 @@ in
 
         ${coreutils-full}/bin/sync
 
-        wait-for [ -b /dev/disk/by-partlabel/nixos ]
+        wait_for [ -b /dev/disk/by-partlabel/nixos ]
         ${e2fsprogs}/bin/mkfs.ext4 -L nixos /dev/disk/by-partlabel/nixos
 
-        wait-for [ -b /dev/disk/by-partlabel/swap ]
+        wait_for [ -b /dev/disk/by-partlabel/swap ]
         ${util-linux}/bin/mkswap -L swap /dev/disk/by-partlabel/swap
 
-        wait-for [ -b /dev/disk/by-partlabel/boot ]
+        wait_for [ -b /dev/disk/by-partlabel/boot ]
         ${dosfstools}/bin/mkfs.fat -F 32 -n boot /dev/disk/by-partlabel/boot
 
         ${coreutils-full}/bin/sync
 
-        wait-for [ -b /dev/disk/by-label/nixos ]
+        wait_for [ -b /dev/disk/by-label/nixos ]
         mount /dev/disk/by-label/nixos /mnt
 
-        wait-for [ -b /dev/disk/by-label/boot ]
+        wait_for [ -b /dev/disk/by-label/boot ]
         ${coreutils-full}/bin/mkdir -p /mnt/boot
         mount -o umask=077 /dev/disk/by-label/boot /mnt/boot
 
-        wait-for [ -b /dev/disk/by-label/swap ]
+        wait_for [ -b /dev/disk/by-label/swap ]
         ${util-linux}/bin/swapon /dev/disk/by-label/swap
 
         ${config.system.build.nixos-install}/bin/nixos-install \
@@ -154,7 +154,7 @@ in
         ${coreutils-full}/bin/cp /iso/tailscale_key /mnt/root/secrets/tailscale_key
       }
 
-      [ -d /sys/firmware/efi/efivars ] && install-uefi || install-legacy
+      [ -d /sys/firmware/efi/efivars ] && install_uefi || install_legacy
 
       ${systemd}/bin/systemctl poweroff
     '';
