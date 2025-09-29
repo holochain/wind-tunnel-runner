@@ -104,6 +104,7 @@ in
         echo "UEFI system detected"
 
         [ -b /dev/sda ] && dev=/dev/sda
+        [ -b /dev/vda ] && dev=/dev/vda
         [ -b /dev/nvme0n1 ] && dev=/dev/nvme0n1
 
         if [ -z ''${dev+x} ]; then
