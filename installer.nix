@@ -27,6 +27,14 @@ in
     volumeID = "wind-tunnel-runner-installer";
   };
 
+  nix = {
+    # Set nixpkgs version to the latest unstable version
+    package = pkgs.nixVersions.latest;
+
+    # Enable the `nix` command and `flakes`
+    extraOptions = "experimental-features = nix-command flakes";
+  };
+
   services.getty.helpLine = ''
                        ██╗    ██╗██╗███╗   ██╗██████╗     ████████╗██╗   ██╗███╗   ██╗███╗   ██╗███████╗██╗
                        ██║    ██║██║████╗  ██║██╔══██╗    ╚══██╔══╝██║   ██║████╗  ██║████╗  ██║██╔════╝██║
