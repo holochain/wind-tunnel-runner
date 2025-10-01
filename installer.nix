@@ -73,86 +73,9 @@ in
         exit 1
       }
 
-      install_legacy() {
-        echo "Legacy/BIOS system detected"
-
-        ${parted}/bin/parted -s "$dev" -- mklabel msdos
-        ${parted}/bin/parted -s "$dev" -- mkpart primary 1MB -8GB
-        ${parted}/bin/parted -s "$dev" -- set 1 boot on
-        ${parted}/bin/parted -s "$dev" -- mkpart primary linux-swap -8GB 100%
-
-        ${coreutils-full}/bin/sync
-
-        ${e2fsprogs}/bin/mkfs.ext4 -L nixos "''${dev}1"
-
-        ${util-linux}/bin/mkswap -L swap "''${dev}2"
-
-        ${coreutils-full}/bin/sync
-
-        wait_for [ -b /dev/disk/by-label/nixos ]
-        mount /dev/disk/by-label/nixos /mnt
-
-        wait_for [ -b /dev/disk/by-label/swap ]
-        ${util-linux}/bin/swapon /dev/disk/by-label/swap
-
-        ${config.system.build.nixos-install}/bin/nixos-install \
-          --system ${legacySystem.config.system.build.toplevel} \
-          --no-root-passwd \
-          --cores 0
-
-        grub-install --target=i386-pc --boot-directory=/mnt/boot "$dev"
-
-        ${coreutils-full}/bin/mkdir -p /mnt/root/secrets
-        ${coreutils-full}/bin/cp /iso/tailscale_key /mnt/root/secrets/tailscale_key
-      }
-
-      install_uefi() {
-        echo "UEFI system detected"
-
-        ${parted}/bin/parted -s "$dev" -- mklabel gpt
-        ${parted}/bin/parted -s "$dev" -- mkpart root ext4 512MB -8GB
-        ${parted}/bin/parted -s "$dev" -- name 1 nixos
-        ${parted}/bin/parted -s "$dev" -- mkpart swap linux-swap -8GB 100%
-        ${parted}/bin/parted -s "$dev" -- name 2 swap
-        ${parted}/bin/parted -s "$dev" -- mkpart ESP fat32 1MB 512MB
-        ${parted}/bin/parted -s "$dev" -- name 3 boot
-        ${parted}/bin/parted -s "$dev" -- set 3 esp on
-
-        ${coreutils-full}/bin/sync
-
-        wait_for [ -b /dev/disk/by-partlabel/nixos ]
-        ${e2fsprogs}/bin/mkfs.ext4 -L nixos /dev/disk/by-partlabel/nixos
-
-        wait_for [ -b /dev/disk/by-partlabel/swap ]
-        ${util-linux}/bin/mkswap -L swap /dev/disk/by-partlabel/swap
-
-        wait_for [ -b /dev/disk/by-partlabel/boot ]
-        ${dosfstools}/bin/mkfs.fat -F 32 -n boot /dev/disk/by-partlabel/boot
-
-        ${coreutils-full}/bin/sync
-
-        wait_for [ -b /dev/disk/by-label/nixos ]
-        mount /dev/disk/by-label/nixos /mnt
-
-        wait_for [ -b /dev/disk/by-label/boot ]
-        ${coreutils-full}/bin/mkdir -p /mnt/boot
-        mount -o umask=077 /dev/disk/by-label/boot /mnt/boot
-
-        wait_for [ -b /dev/disk/by-label/swap ]
-        ${util-linux}/bin/swapon /dev/disk/by-label/swap
-
-        ${config.system.build.nixos-install}/bin/nixos-install \
-          --system ${uefiSystem.config.system.build.toplevel} \
-          --no-root-passwd \
-          --cores 0
-
-        ${coreutils-full}/bin/mkdir -p /mnt/root/secrets
-        ${coreutils-full}/bin/cp /iso/tailscale_key /mnt/root/secrets/tailscale_key
-      }
-
       [ -b /dev/sda ] && dev=/dev/sda
       [ -b /dev/vda ] && dev=/dev/vda
-      [ -d /sys/firmware/efi/efivars ] && [ -b /dev/nvme0n1 ] && dev=/dev/nvme0n1
+      [ -d /sys/firmware/efi ] && [ -b /dev/nvme0n1 ] && dev=/dev/nvme0n1
 
       if [ -z ''${dev+x} ]; then
         echo "Cannot find drive to install on, aborting"
@@ -161,7 +84,56 @@ in
         echo "Erasing $dev and installing Wind Tunnel Runner NixOS"
       fi
 
-      [ -d /sys/firmware/efi/efivars ] && install_uefi || install_legacy
+      ${parted}/bin/parted -s "$dev" -- mklabel gpt \
+        mkpart primary 0% 2MiB \
+        name 1 bios \
+        set 1 bios_grub on \
+        mkpart ESP fat32 2MiB 512MiB \
+        name 2 boot \
+        set 2 esp on \
+        mkpart root ext4 512MiB -8GiB \
+        name 3 nixos \
+        mkpart swap linux-swap -8GiB 100% \
+        name 4 swap
+
+      ${coreutils-full}/bin/sync
+
+      wait_for [ -b /dev/disk/by-partlabel/nixos ]
+      ${e2fsprogs}/bin/mkfs.ext4 -L nixos /dev/disk/by-partlabel/nixos
+
+      wait_for [ -b /dev/disk/by-partlabel/swap ]
+      ${util-linux}/bin/mkswap -L swap /dev/disk/by-partlabel/swap
+
+      wait_for [ -b /dev/disk/by-partlabel/boot ]
+      ${dosfstools}/bin/mkfs.fat -F 32 -n boot /dev/disk/by-partlabel/boot
+
+      ${coreutils-full}/bin/sync
+
+      wait_for [ -b /dev/disk/by-label/nixos ]
+      mount /dev/disk/by-label/nixos /mnt
+
+      if [ -d /sys/firmware/efi ]; then
+        wait_for [ -b /dev/disk/by-label/boot ]
+        ${coreutils-full}/bin/mkdir -p /mnt/boot
+        mount -o umask=077 /dev/disk/by-label/boot /mnt/boot
+      fi
+
+      wait_for [ -b /dev/disk/by-label/swap ]
+      ${util-linux}/bin/swapon /dev/disk/by-label/swap
+
+      [ -d /sys/firmware/efi ] && system="${uefiSystem.config.system.build.toplevel}" || system="${legacySystem.config.system.build.toplevel}"
+
+      ${config.system.build.nixos-install}/bin/nixos-install \
+        --system $system \
+        --no-root-passwd \
+        --cores 0
+
+      if [ ! -d /sys/firmware/efi ]; then
+        grub-install --target=i386-pc --boot-directory=/mnt/boot "$dev"
+      fi
+
+      ${coreutils-full}/bin/mkdir -p /mnt/root/secrets
+      ${coreutils-full}/bin/cp /iso/tailscale_key /mnt/root/secrets/tailscale_key
 
       ${systemd}/bin/systemctl poweroff
     '';
