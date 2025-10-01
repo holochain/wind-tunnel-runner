@@ -25,10 +25,10 @@ in
 
       loader = {
         grub = {
-          enable = !config.isUEFI;
+          enable = true;
           device = "nodev";
+          efiSupport = config.isUEFI;
         };
-        systemd-boot.enable = config.isUEFI;
         efi.canTouchEfiVariables = config.isUEFI;
       };
     };
