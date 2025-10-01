@@ -26,7 +26,7 @@ in
       loader = {
         grub = {
           enable = !config.isUEFI;
-          device = lib.mkIf (!config.isUEFI) (mkBaseDefault "/dev/sda");
+          device = "nodev";
         };
         systemd-boot.enable = config.isUEFI;
         efi.canTouchEfiVariables = config.isUEFI;

@@ -104,6 +104,8 @@ in
           --no-root-passwd \
           --cores 0
 
+        grub-install --target=i386-pc --boot-directory=/mnt/boot /dev/sda
+
         ${coreutils-full}/bin/mkdir -p /mnt/root/secrets
         ${coreutils-full}/bin/cp /iso/tailscale_key /mnt/root/secrets/tailscale_key
       }
