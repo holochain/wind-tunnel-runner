@@ -30,7 +30,15 @@ in
           efiSupport = config.isUEFI;
         };
         efi.canTouchEfiVariables = config.isUEFI;
+        efi.efiSysMountPoint = "/efi-boot";
       };
+    };
+
+    # Mount the EFI boot file system
+    fileSystems."/efi-boot" = {
+      device = "/dev/disk/by-label/boot";
+      fsType = "vfat";
+      options = [ "nofail" ];
     };
 
     # Mount the root file system

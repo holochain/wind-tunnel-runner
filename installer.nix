@@ -112,11 +112,9 @@ in
       wait_for [ -b /dev/disk/by-label/nixos ]
       mount /dev/disk/by-label/nixos /mnt
 
-      if [ -d /sys/firmware/efi ]; then
-        wait_for [ -b /dev/disk/by-label/boot ]
-        ${coreutils-full}/bin/mkdir -p /mnt/boot
-        mount -o umask=077 /dev/disk/by-label/boot /mnt/boot
-      fi
+      wait_for [ -b /dev/disk/by-label/boot ]
+      ${coreutils-full}/bin/mkdir -p /mnt/efi-boot
+      mount -o umask=077 /dev/disk/by-label/boot /mnt/efi-boot
 
       wait_for [ -b /dev/disk/by-label/swap ]
       ${util-linux}/bin/swapon /dev/disk/by-label/swap
