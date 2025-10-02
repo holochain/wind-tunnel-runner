@@ -1,19 +1,8 @@
 { inputs, config, pkgs, lib, modulesPath, ... }:
 let
-  legacySystem = lib.nixosSystem {
+  baseSystem = lib.nixosSystem {
     system = "x86_64-linux";
-    modules = [
-      ./base-install.nix
-      { isUEFI = false; }
-    ];
-    specialArgs = { inherit inputs; };
-  };
-  uefiSystem = lib.nixosSystem {
-    system = "x86_64-linux";
-    modules = [
-      ./base-install.nix
-      { isUEFI = true; }
-    ];
+    modules = [ ./base-install.nix ];
     specialArgs = { inherit inputs; };
   };
 in
@@ -119,16 +108,12 @@ in
       wait_for [ -b /dev/disk/by-label/swap ]
       ${util-linux}/bin/swapon /dev/disk/by-label/swap
 
-      [ -d /sys/firmware/efi ] && system="${uefiSystem.config.system.build.toplevel}" || system="${legacySystem.config.system.build.toplevel}"
-
       ${config.system.build.nixos-install}/bin/nixos-install \
-        --system $system \
+        --system "${baseSystem.config.system.build.toplevel}" \
         --no-root-passwd \
         --cores 0
 
-      if [ ! -d /sys/firmware/efi ]; then
-        grub-install --target=i386-pc --boot-directory=/mnt/boot "$dev"
-      fi
+      grub-install --target=i386-pc --boot-directory=/mnt/boot "$dev"
 
       ${coreutils-full}/bin/mkdir -p /mnt/root/secrets
       ${coreutils-full}/bin/cp /iso/tailscale_key /mnt/root/secrets/tailscale_key
