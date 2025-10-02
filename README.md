@@ -71,13 +71,12 @@ The new machine should be listed on the Tailscale dashboard at
 To approve the machine, select the `...` dropdown on the right of the machine
 and select `Approve`.
 
-Take note of whether the node is called `nomad-client-uefi` or
-`nomad-client-no-uefi`, as this will be important later. Then, change the name
-of the machine/node in Tailscale by selecting the `...` dropdown on the right
-of the machine and select `Edit machine name...`. The name should be unique and
-recognisable so that you know which node belongs to you, something like
-`nomad-client-<user>` is common practice with a base-one index after it, if you
-have multiple machines, i.e. `nomad-client-<user>-<index>`.
+Next, change the name of the machine/node in Tailscale by selecting the `...`
+dropdown on the right of the machine and select `Edit machine name...`. The
+name should be unique and recognisable so that you know which node belongs to
+you, something like `nomad-client-<user>` is common practice with a base-one
+index after it, if you have multiple machines, i.e.
+`nomad-client-<user>-<index>`.
 
 > [!Note]
 > Changing the node name in Tailscale will not immediately change the hostname
@@ -86,10 +85,7 @@ have multiple machines, i.e. `nomad-client-<user>-<index>`.
 
 Finally, add the new machine as a "node" to the `Colmena` definition in the
 [colmena.nix](colmena.nix) file, the name of the machine should match the name
-in the Tailscale dashboard and the value of `isUEFI` should be set based on the
-original machine name where it should be set to `true` if the name was
-`nomad-client-uefi` and `false` if the original name was
-`nomad-client-no-uefi`.
+in the Tailscale dashboard.
 
 ```nix
 inputs:
@@ -99,10 +95,7 @@ in
 {
   # ...other config...
 
-  <your-machine-name> = _: {
-    isUEFI = true; # if name was `nomad-client-uefi`
-    isUEFI = false; # if name was `nomad-client-no-uefi`
-  };
+  <your-machine-name> = _: { };
 }
 ```
 
@@ -148,8 +141,6 @@ in
   # ...other config...
 
   <your-machine-name> = _: {
-    isUEFI = true;
-
     fileSystems."/" = {
       device = "/dev/disk/by-uuid/<uuid-of-main-drive>";
       fsType = "ext4";
@@ -165,30 +156,26 @@ Commit and push these changes to a new branch.
 
 ##### Bootloader
 
-> [!Warning]
-> HoloPorts seem to use GRUB and so you need to follow this section.
-
-By default, systemd-boot is used as the bootloader. If your system already has
-GRUB installed then the NixOS installer might default to using GRUB instead of
-systemd-boot.
+By default, NixOS will install `systemd-boot` as the bootloader for UEFI
+systems. We use GRUB as it supports both UEFI and older BIOS systems.
 
 You can find out what bootloader is currently used by checking the generated
 `/etc/nixos/hardware-configuration.nix` file and looking for `boot.loader`
 options.
 
-If you are currently using GRUB, or if you just prefer to use GRUB, then
-override the bootloader for your node only to switch to GRUB:
+If you are currently using `systemd-boot`, then take care to check that GRUB is
+used as the priority boot option in your machine's BIOS.
+
+If you would prefer to use `systemd-boot` then override the `boot.loader`
+settings for your machine in the Colmena config:
 
 ```nix
 <your-machine-name> = _: {
   # ...other config...
 
-  isUEFI = false; # This will use GRUB instead of systemd-boot as the bootloader
-
   boot.loader = {
-    grub = {
-      # Override GRUB settings here if required.
-    };
+    grub.enable = false;
+    systemd-boot.enable = true;
   };
 };
 ```
