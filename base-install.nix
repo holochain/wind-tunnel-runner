@@ -4,11 +4,6 @@ let
   mkBaseDefault = value: lib.mkOverride 1200 value;
 in
 {
-  options.isUEFI = lib.mkOption {
-    type = lib.types.bool;
-    description = "Does the system support a UEFI bootloader";
-  };
-
   config = {
     boot = {
       # Kernel modules available for use during the boot process. Must include all modules necessary for mounting the root device
