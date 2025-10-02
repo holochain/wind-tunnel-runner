@@ -1,4 +1,4 @@
-{ pkgs, lib, config, inputs, ... }:
+{ pkgs, lib, inputs, ... }:
 let
   # Set a value with a lower priority than `lib.mkDefault`
   mkBaseDefault = value: lib.mkOverride 1200 value;
@@ -27,9 +27,9 @@ in
         grub = {
           enable = true;
           device = "nodev";
-          efiSupport = config.isUEFI;
+          efiSupport = true;
+          efiInstallAsRemovable = true;
         };
-        efi.canTouchEfiVariables = config.isUEFI;
         efi.efiSysMountPoint = "/efi-boot";
       };
     };
@@ -72,7 +72,7 @@ in
 
     networking = {
       # Set the default machine's name
-      hostName = mkBaseDefault (if config.isUEFI then "nomad-client-uefi" else "nomad-client-no-uefi");
+      hostName = mkBaseDefault "nomad-client";
 
       # Enable DHCP for all network devices
       useDHCP = true;
