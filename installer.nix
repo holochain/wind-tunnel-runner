@@ -57,7 +57,7 @@ in
           if $@; then
             return
           fi
-          sleep 1
+          ${coreutils-full}/bin/sleep 1
         done
         exit 1
       }
@@ -67,10 +67,10 @@ in
       [ -d /sys/firmware/efi ] && [ -b /dev/nvme0n1 ] && dev=/dev/nvme0n1
 
       if [ -z ''${dev+x} ]; then
-        echo "Cannot find drive to install on, aborting"
+        ${coreutils-full}/bin/echo "Cannot find drive to install on, aborting"
         exit 1
       else
-        echo "Erasing $dev and installing Wind Tunnel Runner NixOS"
+        ${coreutils-full}/bin/echo "Erasing $dev and installing Wind Tunnel Runner NixOS"
       fi
 
       ${parted}/bin/parted -s "$dev" -- mklabel gpt \
@@ -113,7 +113,7 @@ in
         --no-root-passwd \
         --cores 0
 
-      grub-install --target=i386-pc --boot-directory=/mnt/boot "$dev"
+      ${grub2}/bin/grub-install --target=i386-pc --boot-directory=/mnt/boot "$dev"
 
       ${coreutils-full}/bin/mkdir -p /mnt/root/secrets
       ${coreutils-full}/bin/cp /iso/tailscale_key /mnt/root/secrets/tailscale_key
