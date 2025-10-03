@@ -12,6 +12,7 @@ jobs:
       - uses: actions/checkout@v5
 
       - name: Generate tailscale API key
+        id: generate_api_key
         run: |
           API_KEY=$(curl \
             -d "client_id=${{ secrets.TS_OAUTH_CLIENT_ID }}" \
@@ -20,3 +21,34 @@ jobs:
             | jq .access_token)
           echo "api_key=$API_KEY"
           echo "api_key=$API_KEY" >> "$GITHUB_OUTPUT"
+
+      - name: Generate tailscale auth key
+        run: |
+          AUTH_KEY=$(curl \
+            'https://api.tailscale.com/api/v2/tailnet/-/keys' \
+            --request POST \
+            --header 'Content-Type: application/json' \
+            --header 'Authorization: Bearer ${{ steps.generate_api_key.outputs.api_key }}' \
+            --data '{
+              "description": "Nomad client access from installer ISO",
+              "capabilities": {
+                "devices": {
+                  "create": {
+                    "reusable": true,
+                    "ephemeral": false,
+                    "preauthorized": false,
+                    "tags": [
+                      "tag:nomad-client"
+                    ]
+                  }
+                }
+              },
+              "expirySeconds": 86400,
+              "scopes": [
+                "auth_keys:write"
+              ],
+              "tags": [
+                "tag:ci"
+              ]
+            }' | jq .key)
+          echo "auth_key=$AUTH_KEY"
