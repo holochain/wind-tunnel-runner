@@ -1,0 +1,25 @@
+name: prepare-release.yml
+
+on:
+  push:
+    branches: [main, "feat/19-use-a-long-lasting-tailscale-token-for-new-nodes-to-join-the-tailnet"]
+  workflow_dispatch:
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Build the installer ISO
+        run: nix build .#installer-iso
+
+      - name: Generate tailscale API key
+        run: |
+          API_KEY=$(curl \
+            -d "client_id=${{ secrets.TS_OAUTH_CLIENT_ID }}" \
+            -d "client_secret=${{ secrets.TS_OAUTH_SECRET }}" \
+            "https://api.tailscale.com/api/v2/oauth/token" \
+            | jq .access_token)
+          echo "api_key=$API_KEY"
+          echo "api_key=$API_KEY" >> "$GITHUB_OUTPUT"
