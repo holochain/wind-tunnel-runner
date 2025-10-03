@@ -1,16 +1,11 @@
-{ pkgs, lib, config, inputs, ... }:
+{ pkgs, lib, inputs, ... }:
 let
   # Set a value with a lower priority than `lib.mkDefault`
   mkBaseDefault = value: lib.mkOverride 1200 value;
 in
 {
-  options.isUEFI = lib.mkOption {
-    type = lib.types.bool;
-    description = "Does the system support a UEFI bootloader";
-  };
-
   config = {
-    boot = {
+    boot = mkBaseDefault {
       # Kernel modules available for use during the boot process. Must include all modules necessary for mounting the root device
       initrd.availableKernelModules = [
         "ata_piix"
@@ -25,12 +20,20 @@ in
 
       loader = {
         grub = {
-          enable = !config.isUEFI;
-          device = lib.mkIf (!config.isUEFI) (mkBaseDefault "/dev/sda");
+          enable = true;
+          device = "nodev";
+          efiSupport = true;
+          efiInstallAsRemovable = true;
         };
-        systemd-boot.enable = config.isUEFI;
-        efi.canTouchEfiVariables = config.isUEFI;
+        efi.efiSysMountPoint = "/efi-boot";
       };
+    };
+
+    # Mount the EFI boot file system
+    fileSystems."/efi-boot" = {
+      device = "/dev/disk/by-label/boot";
+      fsType = "vfat";
+      options = [ "nofail" ];
     };
 
     # Mount the root file system
@@ -64,7 +67,7 @@ in
 
     networking = {
       # Set the default machine's name
-      hostName = mkBaseDefault (if config.isUEFI then "nomad-client-uefi" else "nomad-client-no-uefi");
+      hostName = mkBaseDefault "nomad-client";
 
       # Enable DHCP for all network devices
       useDHCP = true;

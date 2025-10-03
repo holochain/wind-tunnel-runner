@@ -22,7 +22,17 @@ in
   };
 
   nomad-client-1 = _: {
-    isUEFI = true;
+    boot.loader = {
+      grub = {
+        enable = false;
+        efiInstallAsRemovable = false;
+      };
+      systemd-boot.enable = true;
+      efi = {
+        canTouchEfiVariables = true;
+        efiSysMountPoint = "/boot";
+      };
+    };
 
     fileSystems."/" = {
       device = "/dev/disk/by-uuid/a92690a8-d96c-4305-bfd9-ac4cf7f1c9e6";
@@ -31,7 +41,17 @@ in
   };
 
   thetasinner-testoport = { config, ... }: {
-    isUEFI = true;
+    boot.loader = {
+      grub = {
+        enable = false;
+        efiInstallAsRemovable = false;
+      };
+      systemd-boot.enable = true;
+      efi = {
+        canTouchEfiVariables = true;
+        efiSysMountPoint = "/boot";
+      };
+    };
 
     fileSystems."/" = {
       device = "/dev/disk/by-uuid/727efd61-af0f-4b5d-ab90-8b6fb3221c5b";
@@ -48,7 +68,13 @@ in
   };
 
   nomad-client-zippy-hp-1 = _: {
-    isUEFI = false;
+    boot.loader.grub = {
+      device = "/dev/sda";
+      efiSupport = false;
+      efiInstallAsRemovable = false;
+    };
+
+    fileSystems."/efi-boot".enable = false;
 
     fileSystems."/" = {
       device = "/dev/disk/by-uuid/8cd1f3a9-c743-42de-833a-6b9769ebd758";
@@ -56,28 +82,60 @@ in
     };
   };
 
-  nomad-client-cdunster = _: {
-    isUEFI = true;
-  };
+  nomad-client-cdunster = _: { };
 
   jost-test-os-terone = _: {
-    isUEFI = true;
+    boot.loader = {
+      grub = {
+        enable = false;
+        efiInstallAsRemovable = false;
+      };
+      systemd-boot.enable = true;
+      efi = {
+        canTouchEfiVariables = true;
+        efiSysMountPoint = "/boot";
+      };
+    };
   };
 
   nomad-client-zippy-hp-2 = _: {
-    isUEFI = false;
+    boot.loader.grub = {
+      device = "/dev/sda";
+      efiSupport = false;
+      efiInstallAsRemovable = false;
+    };
+
+    fileSystems."/efi-boot".enable = false;
   };
 
   nomad-client-zippy-hp-3 = _: {
-    isUEFI = false;
+    boot.loader.grub = {
+      device = "/dev/sda";
+      efiSupport = false;
+      efiInstallAsRemovable = false;
+    };
+
+    fileSystems."/efi-boot".enable = false;
   };
 
   nomad-client-zippy-hp-4 = _: {
-    isUEFI = false;
+    boot.loader.grub = {
+      device = "/dev/sda";
+      efiSupport = false;
+      efiInstallAsRemovable = false;
+    };
+
+    fileSystems."/efi-boot".enable = false;
   };
 
   nomad-client-zippy-hp-5 = _: {
-    isUEFI = false;
+    boot.loader.grub = {
+      device = "/dev/sda";
+      efiSupport = false;
+      efiInstallAsRemovable = false;
+    };
+
+    fileSystems."/efi-boot".enable = false;
   };
 
 }

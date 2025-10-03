@@ -1,19 +1,8 @@
 { inputs, config, pkgs, lib, modulesPath, ... }:
 let
-  legacySystem = lib.nixosSystem {
+  baseSystem = lib.nixosSystem {
     system = "x86_64-linux";
-    modules = [
-      ./base-install.nix
-      { isUEFI = false; }
-    ];
-    specialArgs = { inherit inputs; };
-  };
-  uefiSystem = lib.nixosSystem {
-    system = "x86_64-linux";
-    modules = [
-      ./base-install.nix
-      { isUEFI = true; }
-    ];
+    modules = [ ./base-install.nix ];
     specialArgs = { inherit inputs; };
   };
 in
@@ -25,6 +14,14 @@ in
   isoImage = {
     isoBaseName = lib.mkForce "wind-tunnel-runner-auto-installer";
     volumeID = "wind-tunnel-runner-installer";
+  };
+
+  nix = {
+    # Set nixpkgs version to the latest unstable version
+    package = pkgs.nixVersions.latest;
+
+    # Enable the `nix` command and `flakes`
+    extraOptions = "experimental-features = nix-command flakes";
   };
 
   services.getty.helpLine = ''
@@ -55,106 +52,71 @@ in
     script = with pkgs; ''
       set -euxo pipefail
 
-      wait-for() {
+      wait_for() {
         for _ in $(seq 10); do
           if $@; then
             return
           fi
-          sleep 1
+          ${coreutils-full}/bin/sleep 1
         done
         exit 1
       }
 
-      install-legacy() {
-        echo "Legacy/BIOS system detected"
+      [ -b /dev/sda ] && dev=/dev/sda
+      [ -b /dev/vda ] && dev=/dev/vda
+      [ -d /sys/firmware/efi ] && [ -b /dev/nvme0n1 ] && dev=/dev/nvme0n1
 
-        if [ ! -b /dev/sda ]; then
-          echo "Cannot find drive to install on, aborting"
-          exit 1
-        fi
+      if [ -z ''${dev+x} ]; then
+        ${coreutils-full}/bin/echo "Cannot find drive to install on, aborting"
+        exit 1
+      else
+        ${coreutils-full}/bin/echo "Erasing $dev and installing Wind Tunnel Runner NixOS"
+      fi
 
-        ${parted}/bin/parted -s /dev/sda -- mklabel msdos
-        ${parted}/bin/parted -s /dev/sda -- mkpart primary 1MB -8GB
-        ${parted}/bin/parted -s /dev/sda -- set 1 boot on
-        ${parted}/bin/parted -s /dev/sda -- mkpart primary linux-swap -8GB 100%
+      ${parted}/bin/parted -s "$dev" -- mklabel gpt \
+        mkpart primary 0% 2MiB \
+        name 1 bios \
+        set 1 bios_grub on \
+        mkpart ESP fat32 2MiB 512MiB \
+        name 2 boot \
+        set 2 esp on \
+        mkpart root ext4 512MiB -8GiB \
+        name 3 nixos \
+        mkpart swap linux-swap -8GiB 100% \
+        name 4 swap
 
-        ${coreutils-full}/bin/sync
+      ${coreutils-full}/bin/sync
 
-        ${e2fsprogs}/bin/mkfs.ext4 -L nixos /dev/sda1
+      wait_for [ -b /dev/disk/by-partlabel/nixos ]
+      ${e2fsprogs}/bin/mkfs.ext4 -L nixos /dev/disk/by-partlabel/nixos
 
-        ${util-linux}/bin/mkswap -L swap /dev/sda2
+      wait_for [ -b /dev/disk/by-partlabel/swap ]
+      ${util-linux}/bin/mkswap -L swap /dev/disk/by-partlabel/swap
 
-        ${coreutils-full}/bin/sync
+      wait_for [ -b /dev/disk/by-partlabel/boot ]
+      ${dosfstools}/bin/mkfs.fat -F 32 -n boot /dev/disk/by-partlabel/boot
 
-        wait-for [ -b /dev/disk/by-label/nixos ]
-        mount /dev/disk/by-label/nixos /mnt
+      ${coreutils-full}/bin/sync
 
-        ${util-linux}/bin/swapon /dev/sda2
+      wait_for [ -b /dev/disk/by-label/nixos ]
+      mount /dev/disk/by-label/nixos /mnt
 
-        ${config.system.build.nixos-install}/bin/nixos-install \
-          --system ${legacySystem.config.system.build.toplevel} \
-          --no-root-passwd \
-          --cores 0
+      wait_for [ -b /dev/disk/by-label/boot ]
+      ${coreutils-full}/bin/mkdir -p /mnt/efi-boot
+      mount -o umask=077 /dev/disk/by-label/boot /mnt/efi-boot
 
-        ${coreutils-full}/bin/mkdir -p /mnt/root/secrets
-        ${coreutils-full}/bin/cp /iso/tailscale_key /mnt/root/secrets/tailscale_key
-      }
+      wait_for [ -b /dev/disk/by-label/swap ]
+      ${util-linux}/bin/swapon /dev/disk/by-label/swap
 
-      install-uefi() {
-        echo "UEFI system detected"
+      ${config.system.build.nixos-install}/bin/nixos-install \
+        --system "${baseSystem.config.system.build.toplevel}" \
+        --no-root-passwd \
+        --cores 0
 
-        [ -b /dev/sda ] && dev=/dev/sda
-        [ -b /dev/nvme0n1 ] && dev=/dev/nvme0n1
+      ${grub2}/bin/grub-install --target=i386-pc --boot-directory=/mnt/boot "$dev"
 
-        if [ -z ''${dev+x} ]; then
-          echo "Cannot find drive to install on, aborting"
-          exit 1
-        else
-          echo "Erasing $dev and installing Wind Tunnel Runner NixOS"
-        fi
-
-        ${parted}/bin/parted -s "$dev" -- mklabel gpt
-        ${parted}/bin/parted -s "$dev" -- mkpart root ext4 512MB -8GB
-        ${parted}/bin/parted -s "$dev" -- name 1 nixos
-        ${parted}/bin/parted -s "$dev" -- mkpart swap linux-swap -8GB 100%
-        ${parted}/bin/parted -s "$dev" -- name 2 swap
-        ${parted}/bin/parted -s "$dev" -- mkpart ESP fat32 1MB 512MB
-        ${parted}/bin/parted -s "$dev" -- name 3 boot
-        ${parted}/bin/parted -s "$dev" -- set 3 esp on
-
-        ${coreutils-full}/bin/sync
-
-        wait-for [ -b /dev/disk/by-partlabel/nixos ]
-        ${e2fsprogs}/bin/mkfs.ext4 -L nixos /dev/disk/by-partlabel/nixos
-
-        wait-for [ -b /dev/disk/by-partlabel/swap ]
-        ${util-linux}/bin/mkswap -L swap /dev/disk/by-partlabel/swap
-
-        wait-for [ -b /dev/disk/by-partlabel/boot ]
-        ${dosfstools}/bin/mkfs.fat -F 32 -n boot /dev/disk/by-partlabel/boot
-
-        ${coreutils-full}/bin/sync
-
-        wait-for [ -b /dev/disk/by-label/nixos ]
-        mount /dev/disk/by-label/nixos /mnt
-
-        wait-for [ -b /dev/disk/by-label/boot ]
-        ${coreutils-full}/bin/mkdir -p /mnt/boot
-        mount -o umask=077 /dev/disk/by-label/boot /mnt/boot
-
-        wait-for [ -b /dev/disk/by-label/swap ]
-        ${util-linux}/bin/swapon /dev/disk/by-label/swap
-
-        ${config.system.build.nixos-install}/bin/nixos-install \
-          --system ${uefiSystem.config.system.build.toplevel} \
-          --no-root-passwd \
-          --cores 0
-
-        ${coreutils-full}/bin/mkdir -p /mnt/root/secrets
-        ${coreutils-full}/bin/cp /iso/tailscale_key /mnt/root/secrets/tailscale_key
-      }
-
-      [ -d /sys/firmware/efi/efivars ] && install-uefi || install-legacy
+      ${coreutils-full}/bin/mkdir -p /mnt/root/secrets
+      ${coreutils-full}/bin/cp /iso/tailscale_key /mnt/root/secrets/tailscale_key
 
       ${systemd}/bin/systemctl poweroff
     '';
