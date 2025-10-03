@@ -176,6 +176,10 @@ settings for your machine in the Colmena config:
   boot.loader = {
     grub.enable = false;
     systemd-boot.enable = true;
+    efi = {
+      canTouchEfiVariables = true;
+      efiSysMountPoint = "/boot";
+    };
   };
 };
 ```
