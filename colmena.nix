@@ -23,7 +23,10 @@ in
 
   nomad-client-1 = _: {
     boot.loader = {
-      grub.enable = false;
+      grub = {
+        enable = false;
+        efiInstallAsRemovable = false;
+      };
       systemd-boot.enable = true;
       efi = {
         canTouchEfiVariables = true;
@@ -39,7 +42,10 @@ in
 
   thetasinner-testoport = { config, ... }: {
     boot.loader = {
-      grub.enable = false;
+      grub = {
+        enable = false;
+        efiInstallAsRemovable = false;
+      };
       systemd-boot.enable = true;
       efi = {
         canTouchEfiVariables = true;
@@ -65,6 +71,7 @@ in
     boot.loader.grub = {
       device = "/dev/sda";
       efiSupport = false;
+      efiInstallAsRemovable = false;
     };
 
     fileSystems."/efi-boot".enable = false;
@@ -79,7 +86,10 @@ in
 
   jost-test-os-terone = _: {
     boot.loader = {
-      grub.enable = false;
+      grub = {
+        enable = false;
+        efiInstallAsRemovable = false;
+      };
       systemd-boot.enable = true;
       efi = {
         canTouchEfiVariables = true;
@@ -92,6 +102,7 @@ in
     boot.loader.grub = {
       device = "/dev/sda";
       efiSupport = false;
+      efiInstallAsRemovable = false;
     };
 
     fileSystems."/efi-boot".enable = false;
@@ -101,6 +112,7 @@ in
     boot.loader.grub = {
       device = "/dev/sda";
       efiSupport = false;
+      efiInstallAsRemovable = false;
     };
 
     fileSystems."/efi-boot".enable = false;
@@ -110,6 +122,7 @@ in
     boot.loader.grub = {
       device = "/dev/sda";
       efiSupport = false;
+      efiInstallAsRemovable = false;
     };
 
     fileSystems."/efi-boot".enable = false;
@@ -119,6 +132,7 @@ in
     boot.loader.grub = {
       device = "/dev/sda";
       efiSupport = false;
+      efiInstallAsRemovable = false;
     };
 
     fileSystems."/efi-boot".enable = false;
