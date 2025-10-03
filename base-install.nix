@@ -5,7 +5,7 @@ let
 in
 {
   config = {
-    boot = {
+    boot = mkBaseDefault {
       # Kernel modules available for use during the boot process. Must include all modules necessary for mounting the root device
       initrd.availableKernelModules = [
         "ata_piix"
