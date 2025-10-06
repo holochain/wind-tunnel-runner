@@ -116,7 +116,7 @@ in
       ${grub2}/bin/grub-install --target=i386-pc --boot-directory=/mnt/boot "$dev"
 
       ${coreutils-full}/bin/mkdir -p /mnt/root/secrets
-      ${coreutils-full}/bin/cp /iso/tailscale_key /mnt/root/secrets/tailscale_key
+      ${curl}/bin/curl -L https://github.com/holochain/wind-tunnel-runner/releases/latest/download/tailscale_key -o /mnt/root/secrets/tailscale_key
 
       ${systemd}/bin/systemctl poweroff
     '';
@@ -125,15 +125,4 @@ in
       Type = "oneshot";
     };
   };
-
-  isoImage.contents = [
-    {
-      source =
-        if builtins.pathExists ./tailscale_key then
-          ./tailscale_key
-        else
-          pkgs.writeText "tailscale_key" "No tailscale_key file was provided";
-      target = "tailscale_key";
-    }
-  ];
 }

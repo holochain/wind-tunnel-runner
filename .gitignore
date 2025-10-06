@@ -4,8 +4,5 @@
 # Pre-commit hooks file as it is managed by Nix
 .pre-commit-config.yaml
 
-# Ignore so that we don't accidentally leak a private Tailscale key
-tailscale_key
-
 # Ignore the result directory of an ISO build so we don't commit it!
 result
