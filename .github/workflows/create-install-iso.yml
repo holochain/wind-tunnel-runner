@@ -11,6 +11,12 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      - name: Install Nix
+        uses: cachix/install-nix-action@v31
+
+      - name: Build Installer ISO
+        run: nix build .#installer-iso
+
       - name: Setup Go environment
         uses: actions/setup-go@v6
         with:
@@ -29,4 +35,5 @@ jobs:
           release="$(date -u +%F)-${GITHUB_SHA:0:7}"
           gh release create "$release" \
             --generate-notes \
+            result/iso/wind-tunnel-runner-auto-installer.iso \
             tailscale_key
