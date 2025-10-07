@@ -72,6 +72,8 @@
             fi
 
             cd ${./.}
+            ${pkgs.coreutils-full}/bin/mkdir -p /root/secrets
+            ${pkgs.curl}/bin/curl -L https://github.com/holochain/wind-tunnel-runner/releases/latest/download/tailscale_key -o /root/secrets/tailscale_key
             ${pkgs.colmena}/bin/colmena apply-local --impure --node="$node"
             while ! ${pkgs.procps}/bin/pgrep "tailscaled" > /dev/null; do
               sleep 0.5
