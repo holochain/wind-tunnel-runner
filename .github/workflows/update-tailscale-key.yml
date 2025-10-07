@@ -1,8 +1,6 @@
 name: Update Tailscale Key
 
 on:
-  push:
-    branches: ["feat/19-use-a-long-lasting-tailscale-token-for-new-nodes-to-join-the-tailnet"]
   workflow_dispatch:
   schedule:
     # 12:00 AM on the first day of every other month
