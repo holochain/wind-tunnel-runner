@@ -25,44 +25,18 @@ then please ignore these instructions.
 
 ### Using Auto-installation ISO
 
-Navigate to <https://login.tailscale.com/admin/settings/keys> and login with
-GitHub using the `holochain-release-automation2` account (credentials in the
-shared password manager).
+Navigate to <https://github.com/holochain/wind-tunnel-runner/releases/latest>
+and download the installer ISO, or use
+[this download link](https://github.com/holochain/wind-tunnel-runner/releases/latest/download/wind-tunnel-runner-auto-installer.iso).
 
-Click the `Generate auth key...` button and create a new key with the following properties:
+Create a live USB from the ISO you just download. You can use `dd`, or whatever
+tool you prefer.
 
-- `Description`: Set to something like "Key to register \<name>'s machine"
-- `Reusable`: Enable if you want to use the same key, and therefore the same
-  ISO, to register multiple machines.
-- `Expiration`: How long you want the **key** to be valid. It does not affect
-  the expiration of the machine itself, just the key.
-- `Ephemeral`: Leave this disabled.
-- `Pre-approved`: Leave this disabled.
-- `Tags`: This **must** be set to `nomad-client`.
-
-Clone this repository and create a `tailscale_key` file in the root with the
-contents of the file being the key you just generated above:
-
-```shell
-echo "<generated key>" > tailscale_key
-```
-
-> [!Warning]
-> Do not commit or share the `tailscale_key` file.
-
-Generate the installation ISO by running:
-
-```shell
-nix build path:.#installer-iso
-```
-
-Create a live USB from the ISO you just generated with `dd`, or whatever
-tool you prefer, the ISO file should be located at
-`result/iso/wind-tunnel-runner-auto-installer-<...>.iso`.
-
-With the machine turned off, plug in the USB and let it run automatically. You
-may need to change the boot order to make sure that the machine boots from the
-USB. The progress/status of the installation will be printed to `tty1` and the
+Make sure that the machine you want to use is connected to the internet via
+Ethernet and power it off. Plug in the USB and power the machine back on, you
+should see the NixOS installer boot menu, if not, may need to change the boot
+order to make sure that the machine boots from the USB first. The
+progress/status of the installation will be printed to `tty1` and the
 machine will shutdown once the installation is completed successfully. Once it
 has shutdown then remove the USB and reboot the machine.
 
@@ -83,7 +57,7 @@ index after it, if you have multiple machines, i.e.
 > of the machine, but this will happen after a `colmena apply` which happens
 > automatically after the PR is merged to `main`.
 
-Finally, add the new machine as a "node" to the `Colmena` definition in the
+Finally, add the new machine as a "node" to the Colmena definition in the
 [colmena.nix](colmena.nix) file, the name of the machine should match the name
 in the Tailscale dashboard.
 
@@ -199,11 +173,6 @@ Then, log into the machine with the root account and run the command:
 ```sh
 nix --experimental-features 'nix-command flakes' run github:holochain/wind-tunnel-runner/<your-branch> -- <your-machine-name>
 ```
-
-After the install, you will be prompted to log into Tailscale via a URL.
-Navigate to this URL on any device and login with the
-`holochain-release-automation2` GitHub account (credentials are in password
-manager shared vault).
 
 Now navigate to <https://login.tailscale.com/admin/machines> and confirm that
 the new machine is there.
