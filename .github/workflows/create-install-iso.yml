@@ -35,5 +35,6 @@ jobs:
           release="$(date -u +%F)-${GITHUB_SHA:0:7}"
           gh release create "$release" \
             --generate-notes \
+            --target $GITHUB_SHA \
             result/iso/wind-tunnel-runner-auto-installer.iso \
             tailscale_key
