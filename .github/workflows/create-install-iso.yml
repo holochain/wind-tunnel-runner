@@ -2,7 +2,7 @@ name: Create Install ISO
 
 on:
   push:
-    branches: [main, "feat/19-use-a-long-lasting-tailscale-token-for-new-nodes-to-join-the-tailnet"]
+    branches: [main]
   workflow_dispatch:
 
 jobs:
