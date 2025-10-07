@@ -1,4 +1,4 @@
-name: Create Install ISO
+name: Create Installer ISO
 
 on:
   push:
