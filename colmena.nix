@@ -67,6 +67,12 @@ in
     nixpkgs.config.allowBroken = true;
   };
 
+  nomad-client-thetasinner-hp-testoport-1 = _: { };
+
+  nomad-client-thetasinner-hp-testoport-2 = _: { };
+
+  nomad-client-thetasinner-hp-testoport-3 = _: { };
+
   nomad-client-zippy-hp-1 = _: {
     boot.loader.grub = {
       device = "/dev/sda";
