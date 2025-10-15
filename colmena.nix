@@ -144,24 +144,7 @@ in
     fileSystems."/efi-boot".enable = false;
   };
 
-  nomad-client-zippy-hp-6 = _: {
-    boot.loader.grub = {
-      device = "/dev/sda";
-      efiSupport = false;
-      efiInstallAsRemovable = false;
-    };
-
-    fileSystems."/efi-boot".enable = false;
-  };
-
-  nomad-client-zippy-hp-7 = _: {
-    boot.loader.grub = {
-      device = "/dev/sda";
-      efiSupport = false;
-      efiInstallAsRemovable = false;
-    };
-
-    fileSystems."/efi-boot".enable = false;
-  };
+  nomad-client-zippy-hp-6 = _: { };
+  nomad-client-zippy-hp-7 = _: { };
 
 }
