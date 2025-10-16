@@ -144,4 +144,7 @@ in
     fileSystems."/efi-boot".enable = false;
   };
 
+  nomad-client-zippy-hp-6 = _: { };
+  nomad-client-zippy-hp-7 = _: { };
+
 }
