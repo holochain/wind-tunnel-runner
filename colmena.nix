@@ -147,5 +147,6 @@ in
   nomad-client-zippy-hp-6 = _: { };
   nomad-client-zippy-hp-7 = _: { };
   nomad-client-zippy-hp-8-n = _: { };
+  sawin-hp-plus = _: { };
 
 }
