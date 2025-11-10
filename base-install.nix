@@ -127,17 +127,8 @@ in
           inputs.wind-tunnel.packages.x86_64-linux.lp-tool
         ];
 
-        # The Nomad configuration file
-        settings = {
-          data_dir = "/var/lib/nomad";
-          plugin.raw_exec.config.enabled = true;
-          acl.enabled = true;
-          client = {
-            enabled = true;
-            servers = [ "nomad-server-01.holochain.org" ];
-            artifact.disable_filesystem_isolation = true;
-          };
-        };
+        # Load the Nomad configuration from file
+        settings = import ./nomad-settings.nix;
       };
     };
 
