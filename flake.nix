@@ -16,6 +16,11 @@
     systems = [ "aarch64-darwin" "x86_64-linux" ];
 
     perSystem = { self', pkgs, system, ... }: {
+      _module.args.pkgs = import inputs.nixpkgs {
+        inherit system;
+        config.allowUnfreePredicate = pkg: builtins.elem (pkgs.lib.getName pkg) [ "nomad" ];
+      };
+
       formatter = pkgs.nixpkgs-fmt;
 
       checks.pre-commit = inputs.pre-commit-hooks.lib.${system}.run {
@@ -109,6 +114,27 @@
         };
 
         installer-iso = inputs.self.nixosConfigurations.installer.config.system.build.isoImage;
+
+        docker-image =
+          let
+            nomadJSON = (pkgs.formats.json { }).generate "nomad.json" (import ./nomad-settings.nix);
+          in
+          pkgs.dockerTools.buildImage {
+            name = "wind-tunnel-runner";
+            tag = "latest";
+            copyToRoot = pkgs.buildEnv {
+              name = "image-root";
+              pathsToLink = [ "/bin" ];
+              paths = [
+                pkgs.coreutils
+                pkgs.iproute2
+                pkgs.iptables
+              ];
+            };
+            config = {
+              Cmd = [ "${pkgs.nomad}/bin/nomad" "agent" "-config=${nomadJSON}" ];
+            };
+          };
       };
     };
 
