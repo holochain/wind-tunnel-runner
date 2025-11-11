@@ -3,6 +3,9 @@ name: Create Installer ISO
 on:
   push:
     branches: [main]
+    paths:
+      - '**.nix'
+      - '!colmena.nix'
   workflow_dispatch:
 
 jobs:
