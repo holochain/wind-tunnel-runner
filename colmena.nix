@@ -92,5 +92,5 @@ in
   nomad-client-zippy-hp-7 = _: { };
   nomad-client-zippy-hp-8-n = _: oldGrubOnlySystem;
 
-  sawin-hp-plus = _: { };
+  sawin-hp-plus = _: oldGrubOnlySystem;
 }
