@@ -146,7 +146,16 @@ in
 
   nomad-client-zippy-hp-6 = _: { };
   nomad-client-zippy-hp-7 = _: { };
-  nomad-client-zippy-hp-8-n = _: { };
-  sawin-hp-plus = _: { };
 
+  nomad-client-zippy-hp-8-n = _: {
+    boot.loader.grub = {
+      device = "/dev/sda";
+      efiSupport = false;
+      efiInstallAsRemovable = false;
+    };
+
+    fileSystems."/efi-boot".enable = false;
+  };
+
+  sawin-hp-plus = _: { };
 }
