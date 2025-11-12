@@ -133,6 +133,11 @@
                 pkgs.nomad
               ];
             };
+            runAsRoot = ''
+              #!${pkgs.runtimeShell}
+              ${pkgs.dockerTools.shadowSetup}
+              useradd nobody -d /nonexistent
+            '';
             config = {
               Cmd = [ "${pkgs.nomad}/bin/nomad" "agent" "-config=${nomadJSON}" ];
             };
