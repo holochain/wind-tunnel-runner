@@ -2,6 +2,11 @@ inputs:
 let
   targetSystem = "x86_64-linux";
 
+  # Use this config as a base for a machine that doesn't support EFI boot and
+  # was setup with the old installer ISO, before
+  # https://github.com/holochain/wind-tunnel-runner/pull/24 was merged.
+  # Note: If you used the installer created by the CI you do *not* need to use
+  # this and the default should be fine.
   oldGrubOnlySystem = {
     boot.loader.grub = {
       device = "/dev/sda";
@@ -12,6 +17,11 @@ let
     fileSystems."/efi-boot".enable = false;
   };
 
+  # Use this config as a base for a machine that has EFI boot support and was
+  # setup with the old installer ISO, before
+  # https://github.com/holochain/wind-tunnel-runner/pull/24 was merged.
+  # Note: If you used the installer created by the CI you do *not* need to use
+  # this and the default should be fine.
   oldSystemdBootSystem = {
     boot.loader = {
       grub = {
