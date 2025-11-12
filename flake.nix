@@ -61,6 +61,7 @@
         packages = with pkgs; [
           self'.checks.pre-commit.enabledPackages
           colmena
+          nomad
         ];
 
         inherit (self'.checks.pre-commit) shellHook;
