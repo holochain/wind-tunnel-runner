@@ -92,7 +92,13 @@ in
 
   nomad-client-cdunster = _: { };
 
-  jost-test-os-terone = _: oldSystemdBootSystem;
+  jost-test-os-terone = _: {
+    boot.loader = {
+      grub.enable = false;
+      systemd-boot.enable = true;
+      efi.canTouchEfiVariables = true;
+    };
+  };
 
   nomad-client-zippy-hp-2 = _: oldGrubOnlySystem;
   nomad-client-zippy-hp-3 = _: oldGrubOnlySystem;
