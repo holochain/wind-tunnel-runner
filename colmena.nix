@@ -16,25 +16,6 @@ let
 
     fileSystems."/efi-boot".enable = false;
   };
-
-  # Use this config as a base for a machine that has EFI boot support and was
-  # setup with the old installer ISO, before
-  # https://github.com/holochain/wind-tunnel-runner/pull/24 was merged.
-  # Note: If you used the installer created by the CI you do *not* need to use
-  # this and the default should be fine.
-  oldSystemdBootSystem = {
-    boot.loader = {
-      grub = {
-        enable = false;
-        efiInstallAsRemovable = false;
-      };
-      systemd-boot.enable = true;
-      efi = {
-        canTouchEfiVariables = true;
-        efiSysMountPoint = "/boot";
-      };
-    };
-  };
 in
 {
   meta = {
@@ -55,14 +36,38 @@ in
     networking.hostName = name;
   };
 
-  nomad-client-1 = _: oldSystemdBootSystem // {
+  nomad-client-1 = _: {
+    boot.loader = {
+      grub = {
+        enable = false;
+        efiInstallAsRemovable = false;
+      };
+      systemd-boot.enable = true;
+      efi = {
+        canTouchEfiVariables = true;
+        efiSysMountPoint = "/boot";
+      };
+    };
+
     fileSystems."/" = {
       device = "/dev/disk/by-uuid/a92690a8-d96c-4305-bfd9-ac4cf7f1c9e6";
       fsType = "ext4";
     };
   };
 
-  thetasinner-testoport = { config, ... }: oldSystemdBootSystem // {
+  thetasinner-testoport = { config, ... }: {
+    boot.loader = {
+      grub = {
+        enable = false;
+        efiInstallAsRemovable = false;
+      };
+      systemd-boot.enable = true;
+      efi = {
+        canTouchEfiVariables = true;
+        efiSysMountPoint = "/boot";
+      };
+    };
+
     fileSystems."/" = {
       device = "/dev/disk/by-uuid/727efd61-af0f-4b5d-ab90-8b6fb3221c5b";
       fsType = "ext4";
