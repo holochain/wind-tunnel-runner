@@ -130,6 +130,7 @@
                 pkgs.coreutils
                 pkgs.iproute2
                 pkgs.iptables
+                pkgs.nomad
               ];
             };
             config = {
