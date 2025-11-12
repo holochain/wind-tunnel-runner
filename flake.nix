@@ -126,11 +126,21 @@
             copyToRoot = pkgs.buildEnv {
               name = "image-root";
               pathsToLink = [ "/bin" ];
-              paths = [
-                pkgs.coreutils
-                pkgs.iproute2
-                pkgs.iptables
-                pkgs.nomad
+              paths = with pkgs; [
+                coreutils-full
+                iproute2
+                iptables
+                nomad
+                bash
+                mount
+                util-linux
+                bzip2
+                gnutar
+                hexdump
+                influxdb2-cli
+                jq
+                telegraf
+
               ];
             };
             runAsRoot = ''
