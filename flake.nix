@@ -116,6 +116,8 @@
 
         installer-iso = inputs.self.nixosConfigurations.installer.config.system.build.isoImage;
 
+        # To build and run the docker container use the following command:
+        # nix build .#docker-image && docker load < result && docker run -t --rm wind-tunnel-runner:latest
         docker-image =
           let
             nomadJSON = (pkgs.formats.json { }).generate "nomad.json" (import ./nomad-settings.nix);
