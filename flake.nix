@@ -146,10 +146,17 @@
             runAsRoot = ''
               #!${pkgs.runtimeShell}
               ${pkgs.dockerTools.shadowSetup}
-              useradd nobody -d /nonexistent
+              groupadd nobody
+              useradd -g nobody nobody -d /nonexistent
+              ${pkgs.coreutils-full}/bin/mkdir -p /var/lib/nomad
+              ${pkgs.coreutils-full}/bin/chown -R nobody:nobody /var/lib/nomad
+
+              ${pkgs.coreutils-full}/bin/mkdir -p /var/lib/alloc_mounts
+              ${pkgs.coreutils-full}/bin/chown -R nobody:nobody /var/lib/alloc_mounts
             '';
             config = {
               Cmd = [ "${pkgs.nomad}/bin/nomad" "agent" "-config=${nomadJSON}" ];
+              User = "nobody";
             };
           };
       };
