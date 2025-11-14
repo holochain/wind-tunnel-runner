@@ -23,6 +23,14 @@ then please ignore these instructions.
 
 ## Adding a node
 
+### Minimum Hardware Requirements
+
+The minimum hardware requirements for running a node are:
+
+- 10GB Disk
+- 2GB RAM
+- An internet connection
+
 ### Using Auto-installation ISO
 
 Navigate to <https://github.com/holochain/wind-tunnel-runner/releases/latest>
