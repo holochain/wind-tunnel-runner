@@ -6,6 +6,6 @@
     enabled = true;
     servers = [ "nomad-server-01.holochain.org" ];
     artifact.disable_filesystem_isolation = true;
-    node_pool = "docker"; # For testing only to not be used by the real WT scenarios
+    node_pool = "default";
   };
 }
