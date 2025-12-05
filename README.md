@@ -28,7 +28,7 @@ then please ignore these instructions.
 The minimum hardware requirements for running a node are:
 
 - 10GB Disk
-- 2GB RAM
+- 4GB RAM
 - An internet connection
 
 ### Using Auto-installation ISO
