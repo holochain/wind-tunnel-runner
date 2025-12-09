@@ -161,6 +161,9 @@
               ];
             };
             config = {
+              Labels = {
+                "org.opencontainers.image.source" = "https://github.com/holochain/wind-tunnel-runner";
+              };
               Env = [
                 "SSL_CERT_FILE=${linuxPkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
                 "NIX_SSL_CERT_FILE=${linuxPkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
