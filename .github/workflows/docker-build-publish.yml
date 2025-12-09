@@ -2,7 +2,7 @@ name: "Build and publish updated Docker image to Docker Hub"
 
 on:
   push:
-    branches: [main]
+  #  branches: [main]
   workflow_dispatch:
 
 concurrency:
