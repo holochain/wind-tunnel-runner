@@ -127,7 +127,7 @@
             };
 
             # To update the dockerhub image, run the following command:
-            # nix run nixpkgs#nix-prefetch-docker -- --image-name hashicorp/nomad --image-tag latest
+            # nix run nixpkgs#nix-prefetch-docker -- --image-name ubuntu --image-tag 24.04
             # Then copy the output below:
             baseImage = linuxPkgs.dockerTools.pullImage {
               imageName = "ubuntu";
