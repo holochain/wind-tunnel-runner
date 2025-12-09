@@ -31,5 +31,3 @@ jobs:
         run: |
           docker load -i result
           docker image push ghcr.io/holochain/wind-tunnel-runner:latest
-        secrets:
-          HRA2_GITHUB_TOKEN: ${{ secrets.HRA2_GITHUB_TOKEN }}
