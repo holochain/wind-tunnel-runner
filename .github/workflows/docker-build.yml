@@ -1,4 +1,4 @@
-name: "Build and publish updated Docker image to Docker Hub"
+name: "Docker Build"
 
 on:
   push:
@@ -10,10 +10,13 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  docker-build-publish:
+  docker-build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Install nix
         uses: cachix/install-nix-action@v31
@@ -27,10 +30,17 @@ jobs:
       - name: Build docker image
         run: nix build .#docker-image
 
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Publish Docker image
         run: |
           docker load -i result
           docker tag wind-tunnel-runner:latest ghcr.io/holochain/wind-tunnel-runner:latest
           docker image push ghcr.io/holochain/wind-tunnel-runner:latest
         env:
-          GITHUB_TOKEN: ${{ secrets.HRA_GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
