@@ -1,0 +1,35 @@
+name: "Build and publish updated Docker image to Docker Hub"
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  docker-build-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install nix
+        uses: cachix/install-nix-action@v31
+
+      - name: Setup cachix
+        uses: cachix/cachix-action@v16
+        with:
+          name: holochain-ci
+          authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
+
+      - name: Build docker image
+        run: nix build .#docker-image
+
+      - name: Publish Docker image
+        run: |
+          docker load -i result
+          docker image push ghcr.io/holochain/wind-tunnel-runner:latest
+        secrets:
+          HRA2_GITHUB_TOKEN: ${{ secrets.HRA2_GITHUB_TOKEN }}

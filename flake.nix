@@ -140,10 +140,10 @@
             nomadJSON = (linuxPkgs.formats.json { }).generate "nomad.json" (import ./nomad-settings.nix);
           in
           linuxPkgs.dockerTools.buildImage {
-            fromImage = baseImage;
             name = "wind-tunnel-runner";
             tag = "latest";
 
+            fromImage = baseImage;
             copyToRoot = linuxPkgs.buildEnv {
               name = "image-root";
               paths = with linuxPkgs; [
