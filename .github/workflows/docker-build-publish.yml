@@ -30,4 +30,5 @@ jobs:
       - name: Publish Docker image
         run: |
           docker load -i result
+          docker tag wind-tunnel-runner:latest ghcr.io/holochain/wind-tunnel-runner:latest
           docker image push ghcr.io/holochain/wind-tunnel-runner:latest
