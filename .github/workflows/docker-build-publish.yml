@@ -32,3 +32,5 @@ jobs:
           docker load -i result
           docker tag wind-tunnel-runner:latest ghcr.io/holochain/wind-tunnel-runner:latest
           docker image push ghcr.io/holochain/wind-tunnel-runner:latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.HRA_GITHUB_TOKEN }}
