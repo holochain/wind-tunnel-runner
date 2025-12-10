@@ -114,7 +114,7 @@ base-one index after it, if you have multiple machines,
 i.e. `nomad-client-<user>-<index>`.
 
 ```bash
-docker run --hosname <MY_HOSTNAME> --cgroupns=host --privileged -d -t --rm ghcr.io/holochain/wind-tunnel-runner:latest
+docker run --hostname <MY_HOSTNAME> --cgroupns=host --net=host --privileged -d -t --rm ghcr.io/holochain/wind-tunnel-runner:latest
 ```
 
 The wind-tunnel-runner will now be running. You can view running docker
