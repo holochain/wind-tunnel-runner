@@ -99,14 +99,9 @@ at <https://nomad-server-01.holochain.org:4646/ui/clients>.
 First, install [Docker](https://docs.docker.com/get-started/get-docker/) on your
 machine, and start the Docker service.
 
-Next, pull the latest Docker image for the wind-tunnel-runner:
-
-```bash
-docker image pull ghcr.io/holochain/wind-tunnel-runner:latest
-```
-
-Finally, run the Docker container. Replace `<MY_HOSTNAME>` with a hostname for
-your machine, and run the command below:
+Next, pull the latest Docker image for the wind-tunnel-runner and run the Docker
+container. Replace `<MY_HOSTNAME>` with a hostname for your machine, and run
+the command below:
 
 The hostname should be unique and recognisable so that you know which node
 belongs to you, something like `nomad-client-<user>` is common practice with a
@@ -114,7 +109,7 @@ base-one index after it, if you have multiple machines,
 i.e. `nomad-client-<user>-<index>`.
 
 ```bash
-docker run --hostname <MY_HOSTNAME> --cgroupns=host --net=host --privileged -d -t --rm ghcr.io/holochain/wind-tunnel-runner:latest
+docker run --hostname <MY_HOSTNAME> --cgroupns=host --net=host --privileged -d --rm ghcr.io/holochain/wind-tunnel-runner:latest
 ```
 
 The wind-tunnel-runner will now be running. You can view running docker
