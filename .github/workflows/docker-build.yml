@@ -3,6 +3,9 @@ name: "Docker Build"
 on:
   push:
     branches: [main]
+    paths:
+      - 'docker-image.nix'
+      - 'nomad-settings.nix'
   workflow_dispatch:
 
 concurrency:
