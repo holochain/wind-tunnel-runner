@@ -16,6 +16,11 @@
     systems = [ "aarch64-darwin" "x86_64-linux" ];
 
     perSystem = { self', pkgs, system, ... }: {
+      _module.args.pkgs = import inputs.nixpkgs {
+        inherit system;
+        config.allowUnfreePredicate = pkg: builtins.elem (pkgs.lib.getName pkg) [ "nomad" ];
+      };
+
       formatter = pkgs.nixpkgs-fmt;
 
       checks.pre-commit = inputs.pre-commit-hooks.lib.${system}.run {
@@ -56,6 +61,7 @@
         packages = with pkgs; [
           self'.checks.pre-commit.enabledPackages
           colmena
+          nomad
         ];
 
         inherit (self'.checks.pre-commit) shellHook;
@@ -109,6 +115,10 @@
         };
 
         installer-iso = inputs.self.nixosConfigurations.installer.config.system.build.isoImage;
+
+        # To build and run the docker container use the following command:
+        # nix build .#docker-image && docker load < result && docker run --cgroupns=host --privileged --net=host --rm wind-tunnel-runner:latest
+        docker-image = import ./docker-image.nix { inherit inputs; };
       };
     };
 

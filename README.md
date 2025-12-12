@@ -89,6 +89,36 @@ Create a PR for your changes and once it is merged then Colmena will manage the
 machine for you and you will see it listed as a client in the Nomad dashboard
 at <https://nomad-server-01.holochain.org:4646/ui/clients>.
 
+### Using Published Docker Image
+
+> [!WARNING]\
+> The wind-tunnel-runner Docker image requires extensive permissions on the
+> host machine that are effectively root access. It should only be run on a
+> dedicated machine as the sole Docker container.
+
+First, install [Docker](https://docs.docker.com/get-started/get-docker/) on your
+machine, and start the Docker service.
+
+Next, pull the latest Docker image for the wind-tunnel-runner and run the Docker
+container. Replace `<MY_HOSTNAME>` with a hostname for your machine, and run
+the command below:
+
+The hostname should be unique and recognisable so that you know which node
+belongs to you, something like `nomad-client-<user>` is common practice with a
+base-one index after it, if you have multiple machines,
+i.e. `nomad-client-<user>-<index>`.
+
+```bash
+docker run --hostname <MY_HOSTNAME> --cgroupns=host --net=host --privileged -d --rm ghcr.io/holochain/wind-tunnel-runner:latest
+```
+
+The wind-tunnel-runner will now be running. You can view running docker
+containers with:
+
+```bash
+docker ps
+```
+
 ### Manually
 
 #### Installing NixOS
