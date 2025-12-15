@@ -17,7 +17,7 @@ let
     finalImageTag = "24.04";
   };
 
-  nomadJSON = (linuxPkgs.formats.json { }).generate "nomad.json" (import ./nomad-settings.nix);
+  nomadJSON = (linuxPkgs.formats.json { }).generate "nomad.json" (import ./nomad-settings-docker.nix);
 in
 linuxPkgs.dockerTools.buildImage {
   name = "wind-tunnel-runner";
