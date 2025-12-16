@@ -6,6 +6,7 @@ on:
     paths:
       - 'docker-image.nix'
       - 'nomad-settings.nix'
+      - 'nomad-settings-docker.nix'
   workflow_dispatch:
 
 concurrency:
