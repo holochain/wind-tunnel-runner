@@ -48,8 +48,8 @@ in
     # Set the system type
     nixpkgs.hostPlatform = "x86_64-linux";
 
-    # Allow proprietary/unfree packages to be installed
-    nixpkgs.config.allowUnfree = true;
+    # Allow specified proprietary/unfree packages to be installed
+    nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (pkgs.lib.getName pkg) [ "nomad" ];
 
     nix = {
       # Set nixpkgs version to the latest unstable version
