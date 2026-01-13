@@ -3,7 +3,7 @@
 
   inputs = {
     holonix.url = "github:holochain/holonix?ref=main-0.5";
-    nixpkgs.follows = "holonix/nixpkgs";
+    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     flake-parts.follows = "holonix/flake-parts";
     pre-commit-hooks = {
       url = "github:cachix/pre-commit-hooks.nix";
