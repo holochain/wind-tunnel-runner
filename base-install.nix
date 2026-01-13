@@ -110,6 +110,7 @@ in
       # Enable Nomad as a client node
       nomad = {
         enable = true;
+        package = pkgs.nomad_1_11;
         dropPrivileges = false; # Clients require root privileges
 
         extraPackages = with pkgs; [
