@@ -36,7 +36,7 @@ linuxPkgs.dockerTools.buildImage {
       influxdb2-cli
       jq
       telegraf
-      nomad
+      nomad_1_11
       inputs.wind-tunnel.packages.x86_64-linux.lp-tool
     ];
   };
