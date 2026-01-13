@@ -29,7 +29,7 @@ The minimum hardware requirements for running a node are:
 
 - x86_64 CPU architecture
 - 20GB Disk
-- 4GB RAM
+- 8GiB RAM
 - An internet connection
 
 ### Using Auto-installation ISO
