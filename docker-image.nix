@@ -19,6 +19,9 @@ let
 
   nomadJSON = (linuxPkgs.formats.json { }).generate "nomad.json" (import nomadSettings);
 
+  entrypoint = linuxPkgs.writeShellScript "entrypoint.sh" ''
+    exec ${linuxPkgs.nomad_1_11}/bin/nomad agent "-config=${nomadJSON}"
+  '';
 in
 linuxPkgs.dockerTools.buildImage {
   inherit (dockerSettings) name;
@@ -39,16 +42,25 @@ linuxPkgs.dockerTools.buildImage {
       nomad_1_11
       inputs.wind-tunnel.packages.x86_64-linux.lp-tool
     ];
+
+    # I hoped this would let us deploy the threefold nodes with `--entrypoint /bin/entrypoint.sh` but it doesn't seem to work.
+    # Instead we need to determine the actual path to the script in the nix store i.e. `--entrypoint --entrypoint /nix/store/qp62cxqz121y834q0y4grv0hqszlv6jg-docker-entrypoint.sh`
+    # To get the script path manually I ran the docker container locally, entered its shell, and then ran `echo $ENTRYPOINT_SCRIPT`
+    postBuild = ''
+      mkdir -p $out/bin
+      ln -s ${entrypoint} $out/bin/entrypoint.sh
+    '';
   };
   config = {
     Labels = {
       "org.opencontainers.image.source" = "https://github.com/holochain/wind-tunnel-runner";
     };
     Env = [
+      "ENTRYPOINT_SCRIPT=${entrypoint}"
       "SSL_CERT_FILE=${linuxPkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
       "NIX_SSL_CERT_FILE=${linuxPkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
     ];
-    Cmd = [ "/bin/nomad" "agent" "-config=${nomadJSON}" ];
+    Cmd = [ "/bin/entrypoint.sh" ];
     User = "root";
   };
 }
