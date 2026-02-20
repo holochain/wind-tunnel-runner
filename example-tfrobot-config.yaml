@@ -1,0 +1,33 @@
+node_groups:
+  - name: wind_tunnel_runners_europe
+    nodes_count: 20 # amount of nodes to be found
+    free_cpu: 2 # number of logical cores
+    free_mru: 8 # amount of memory in GB
+    free_ssd: 12 # amount of ssd storage in GB
+    free_hdd: 0 # amount of hdd storage in GB
+    dedicated: true # are nodes dedicated
+    public_ip4: false # should the nodes have free ip v4
+    public_ip6: false # should the nodes have free ip v6
+    certified: false # should the nodes be certified (if false the nodes could be certified or DIY)
+    region: europe # threefold region: africa, america, antarctic, antarctic ocean, asia, europe, oceania, polar
+vms:
+  - name: wind_tunnel_runner
+    vms_count: 20 # amount of vms with the same configurations
+    node_group: wind_tunnel_runners_europe # the name of the predefined group of nodes
+    cpu: 2 # number of logical cores
+    mem: 8 # amount of  memory in GB
+    public_ip4: false
+    public_ip6: false
+    ygg_ip: false
+    mycelium_ip: false
+    flist: https://hub.threefold.me/holochain.3bot/ghcr.io-holochain-wind-tunnel-runner-threefold-latest.flist
+    entry_point: /entrypoint.sh
+    root_size: 0 # root size in GB, 0 is the default
+    ssh_key: mattyg # the name of the predefined ssh key, will be defined below
+
+
+ssh_keys: # The wind tunnel runner docker images are not configured for ssh access, but we still need to provide a key
+  mattyg: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINrqSdswiHNffBpd4bHOieVNfLNQZABa6fLkG5CukFT+ matt@megion
+
+mnemonic: THIS IS A SECRET MNEMONIC FOR THE TFCHAIN WALLET # mnemonic of the tfchain wallet that will be charged
+network: main # eg: main, test, qa, dev
