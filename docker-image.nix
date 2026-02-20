@@ -1,4 +1,4 @@
-{ inputs }:
+{ inputs, nomadSettings, dockerSettings }:
 let
   # Use x86_64-linux nixpkgs for docker image regardless of build system
   linuxPkgs = import inputs.nixpkgs {
@@ -17,12 +17,12 @@ let
     finalImageTag = "24.04";
   };
 
-  nomadJSON = (linuxPkgs.formats.json { }).generate "nomad.json" (import ./nomad-settings-docker.nix);
+  nomadJSON = (linuxPkgs.formats.json { }).generate "nomad.json" (import nomadSettings);
+
 in
 linuxPkgs.dockerTools.buildImage {
-  name = "wind-tunnel-runner";
+  inherit (dockerSettings) name;
   tag = "latest";
-
   fromImage = baseImage;
   copyToRoot = linuxPkgs.buildEnv {
     name = "image-root";

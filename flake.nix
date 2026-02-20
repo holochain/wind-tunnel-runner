@@ -118,7 +118,19 @@
 
         # To build and run the docker container use the following command:
         # nix build .#docker-image && docker load < result && docker run --cgroupns=host --privileged --net=host --rm wind-tunnel-runner:latest
-        docker-image = import ./docker-image.nix { inherit inputs; };
+        docker-image = import ./docker-image.nix {
+          inherit inputs;
+          dockerSettings = {
+            name = "wind-tunnel-runner";
+          };
+        };
+        docker-image-threefold = import ./docker-image.nix {
+          inherit inputs;
+          nomadSettings = ./nomad-settings-threefold.nix;
+          dockerSettings = {
+            name = "wind-tunnel-runner-threefold";
+          };
+        };
       };
     };
 
