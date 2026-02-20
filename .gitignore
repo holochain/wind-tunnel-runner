@@ -5,4 +5,4 @@
 .pre-commit-config.yaml
 
 # Ignore the result directory of an ISO build so we don't commit it!
-result
+result*
