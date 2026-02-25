@@ -27,6 +27,13 @@ let
   };
 
   nomadJSON = (linuxPkgs.formats.json { }).generate "nomad.json" (import ./nomad-settings-docker.nix);
+
+  # Wrapper entrypoint that synchronizes the system clock via NTP before starting Nomad.
+  # Some runners have very behind system clocks which affects wind-tunnel scenarios.
+  entrypoint = linuxPkgs.writeShellScript "entrypoint.sh" ''
+    ${linuxPkgs.chrony}/bin/chronyd -q 'server pool.ntp.org iburst' 'makestep 1 -1'
+    exec /bin/nomad agent -config=${nomadJSON}
+  '';
 in
 linuxPkgs.dockerTools.buildImage {
   name = "wind-tunnel-runner";
@@ -57,7 +64,7 @@ linuxPkgs.dockerTools.buildImage {
       "SSL_CERT_FILE=${linuxPkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
       "NIX_SSL_CERT_FILE=${linuxPkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
     ];
-    Cmd = [ "/bin/nomad" "agent" "-config=${nomadJSON}" ];
+    Cmd = [ "${entrypoint}" ];
     User = "root";
   };
 }
