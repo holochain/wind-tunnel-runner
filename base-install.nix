@@ -107,6 +107,18 @@ in
         extraUpFlags = [ "--ssh" "--advertise-tags=tag:nomad-client" ];
       };
 
+      # Disable systemd-timesyncd in favour of chrony.
+      timesyncd.enable = false;
+
+      # Enable chrony NTP service to keep the system clock synchronized.
+      # Some runners have very behind system clocks which affects wind-tunnel scenarios.
+      chrony = {
+        enable = true;
+        extraConfig = ''
+          makestep 1 -1
+        '';
+      };
+
       # Enable Nomad as a client node
       nomad = {
         enable = true;
