@@ -122,6 +122,7 @@ in
           influxdb2-cli
           jq
           telegraf
+          procps
           inputs.wind-tunnel.packages.x86_64-linux.lp-tool
         ];
 
