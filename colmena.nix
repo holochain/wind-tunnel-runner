@@ -83,10 +83,21 @@ in
   };
 
   thetasinner-hp-testoport-1 = _: { };
-
   thetasinner-hp-testoport-2 = _: { };
-
   thetasinner-hp-testoport-3 = _: { };
+  thetasinner-hp-testoport-4 = _: { };
+  thetasinner-hp-testoport-5 = _: { };
+  thetasinner-hp-testoport-6 = _: { };
+  thetasinner-hp-testoport-7 = _: { };
+  thetasinner-hp-testoport-8 = _: { };
+  thetasinner-hp-testoport-9 = _: { };
+  thetasinner-hp-testoport-10 = _: { };
+  thetasinner-hp-testoport-11 = _: { };
+  thetasinner-hp-testoport-12 = _: { };
+  thetasinner-hp-testoport-13 = _: { };
+  thetasinner-hp-testoport-14 = _: { };
+  thetasinner-hp-testoport-15 = _: { };
+  thetasinner-hp-testoport-16 = _: { };
 
   nomad-client-zippy-hp-1 = _: oldGrubOnlySystem // {
     fileSystems."/" = {
