@@ -12,7 +12,7 @@
   };
 
   outputs = inputs: inputs.flake-parts.lib.mkFlake { inherit inputs; } {
-    systems = [ "aarch64-darwin" "x86_64-linux" ];
+    systems = [ "aarch64-darwin" "x86_64-linux" "aarch64-linux" ];
 
     perSystem = { self', pkgs, system, ... }: {
       _module.args.pkgs = import inputs.nixpkgs {
@@ -117,7 +117,10 @@
 
         # To build and run the docker container use the following command:
         # nix build .#docker-image && docker load < result && docker run --cgroupns=host --privileged --net=host --rm wind-tunnel-runner:latest
-        docker-image = import ./docker-image.nix { inherit inputs; };
+        docker-image =
+          assert system != "aarch64-darwin"
+            || throw "Cannot build docker-image for system ${system} try 'nix build .#packages.x86_64-linux.docker-image' or 'nix build .#packages.aarch64-linux.docker-image' instead";
+          import ./docker-image.nix { inherit inputs system; };
       };
     };
 

@@ -1,20 +1,29 @@
-{ inputs }:
+{ inputs, system ? "x86_64-linux" }:
 let
-  # Use x86_64-linux nixpkgs for docker image regardless of build system
+  # Use the given system's nixpkgs for the docker image
   linuxPkgs = import inputs.nixpkgs {
-    system = "x86_64-linux";
+    inherit system;
     config.allowUnfreePredicate = pkg: builtins.elem (linuxPkgs.lib.getName pkg) [ "nomad" ];
   };
 
-  # To update the dockerhub image, run the following command:
-  # nix run nixpkgs#nix-prefetch-docker -- --image-name ubuntu --image-tag 24.04
-  # Then copy the output below:
-  baseImage = linuxPkgs.dockerTools.pullImage {
-    imageName = "ubuntu";
-    imageDigest = "sha256:c35e29c9450151419d9448b0fd75374fec4fff364a27f176fb458d472dfc9e54";
-    hash = "sha256-0j8xM+mECrBBHv7ZqofiRaeSoOXFBtLYjgnKivQztS0=";
-    finalImageName = "ubuntu";
-    finalImageTag = "24.04";
+  # To update a dockerhub image digest, run the following command:
+  # x86_64: nix run nixpkgs#nix-prefetch-docker -- --image-name ubuntu --image-tag 24.04 --os linux --arch amd64
+  # aarch64: nix run nixpkgs#nix-prefetch-docker -- --image-name ubuntu --image-tag 24.04 --os linux --arch arm64
+  baseImages = {
+    "x86_64-linux" = linuxPkgs.dockerTools.pullImage {
+      imageName = "ubuntu";
+      imageDigest = "sha256:c35e29c9450151419d9448b0fd75374fec4fff364a27f176fb458d472dfc9e54";
+      hash = "sha256-0j8xM+mECrBBHv7ZqofiRaeSoOXFBtLYjgnKivQztS0=";
+      finalImageName = "ubuntu";
+      finalImageTag = "24.04";
+    };
+    "aarch64-linux" = linuxPkgs.dockerTools.pullImage {
+      imageName = "ubuntu";
+      imageDigest = "sha256:d1e2e92c075e5ca139d51a140fff46f84315c0fdce203eab2807c7e495eff4f9";
+      hash = "sha256-70XdcBIfxzsgvmRDQ5vWOv9QUcReXi3t4baLQnTuOPE=";
+      finalImageName = "ubuntu";
+      finalImageTag = "24.04";
+    };
   };
 
   nomadJSON = (linuxPkgs.formats.json { }).generate "nomad.json" (import ./nomad-settings-docker.nix);
@@ -23,7 +32,7 @@ linuxPkgs.dockerTools.buildImage {
   name = "wind-tunnel-runner";
   tag = "latest";
 
-  fromImage = baseImage;
+  fromImage = baseImages.${system};
   copyToRoot = linuxPkgs.buildEnv {
     name = "image-root";
     paths = with linuxPkgs; [
@@ -37,7 +46,7 @@ linuxPkgs.dockerTools.buildImage {
       jq
       telegraf
       nomad_1_11
-      inputs.wind-tunnel.packages.x86_64-linux.lp-tool
+      inputs.wind-tunnel.packages.${system}.lp-tool
     ];
   };
   config = {

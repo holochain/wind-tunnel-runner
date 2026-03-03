@@ -15,7 +15,14 @@ concurrency:
 
 jobs:
   docker-build:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - runner: ubuntu-latest
+            arch: amd64
+          - runner: ubuntu-24.04-arm
+            arch: arm64
+    runs-on: ${{ matrix.runner }}
     permissions:
       contents: read
       packages: write
@@ -44,7 +51,29 @@ jobs:
       - name: Publish Docker image
         run: |
           docker load -i result
-          docker tag wind-tunnel-runner:latest ghcr.io/holochain/wind-tunnel-runner:latest
-          docker image push ghcr.io/holochain/wind-tunnel-runner:latest
+          docker tag wind-tunnel-runner:latest ghcr.io/holochain/wind-tunnel-runner:latest-${{ matrix.arch }}
+          docker image push ghcr.io/holochain/wind-tunnel-runner:latest-${{ matrix.arch }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish-manifest:
+    needs: docker-build
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    steps:
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create and push multi-arch manifest
+        run: |
+          docker manifest create ghcr.io/holochain/wind-tunnel-runner:latest \
+            ghcr.io/holochain/wind-tunnel-runner:latest-amd64 \
+            ghcr.io/holochain/wind-tunnel-runner:latest-arm64
+          docker manifest push ghcr.io/holochain/wind-tunnel-runner:latest
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
