@@ -263,3 +263,52 @@ To do this go to <https://login.tailscale.com/admin/machines> and select the
 Now that the machine is registered on Tailscale, navigate to
 <https://nomad-server-01.holochain.org:4646/ui/clients> and check that the
 machine is also in the list of available Nomad clients.
+
+## Deploying nodes via Threefold Grid
+
+### Generate the flist
+
+1. Build the docker image:
+   `nix build .#docker-image-threefold && docker load < result`
+1. Publish the docker image to docker hub
+1. Generate the flist via the Threefold Hub web interface:
+   <https://hub.threefold.me/docker-convert>
+1. Get the url of the flist on the Threefold Hub web interface
+   under the "Homemade" tab
+
+### Deploy a single node
+
+1. Get the
+   [tf-grid-cli binary](https://github.com/threefoldtech/tfgrid-sdk-go/releases)
+
+1. Run the command:
+
+```bash
+tf-grid-cli deploy vm --cpu 2 --memory 8 --disk 12 --name <my hostname> \
+  --ssh <path to my ssh pub key> \
+  --flist <url of hosted flist> \
+  --entrypoint <path to entrypoint script in nix store>
+```
+
+### Deploy a batch of nodes
+
+1. Get the
+   [tfrobot binary](https://github.com/threefoldtech/tfgrid-sdk-go/releases)
+
+1. Fill in the deployment config in `example-tfrobot-config.yaml`
+
+1. Run the command
+
+```bash
+tfrobot deploy -c example-tfrobot-config.yaml
+```
+
+### Remove deployed nodes
+
+1. Get the [tf-grid-cli binary](https://github.com/threefoldtech/tfgrid-sdk-go/releases)
+
+1. Run the command to cancel all node contracts and stop deployments.
+
+```bash
+tf-grid-cli cancel contracts -a
+```
