@@ -123,6 +123,14 @@ in
   nomad-client-zippy-hp-6 = _: { };
   nomad-client-zippy-hp-7 = _: { };
   nomad-client-zippy-hp-8-n = _: oldGrubOnlySystem;
+  nomad-client-zippy-hp-9 = _: { };
+  nomad-client-zippy-hp-10 = _: { };
+  nomad-client-zippy-hp-11 = _: { };
+  nomad-client-zippy-hp-12 = _: { };
+  nomad-client-zippy-hp-13 = _: { };
+  nomad-client-zippy-hp-14 = _: { };
+  nomad-client-zippy-hp-15 = _: { };
+  nomad-client-zippy-hp-16 = _: { };
 
   sawin-hp-plus = _: oldGrubOnlySystem;
 }
