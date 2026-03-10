@@ -58,8 +58,8 @@ jobs:
           docker image push ghcr.io/holochain/wind-tunnel-runner:latest-${{ matrix.arch }}
 
           docker load -i result-threefold
-          docker tag wind-tunnel-runner-threefold:latest ghcr.io/holochain/wind-tunnel-runner-threefold-${{ matrix.arch }}
-          docker image push ghcr.io/holochain/wind-tunnel-runner-threefold-${{ matrix.arch }}
+          docker tag wind-tunnel-runner-threefold:latest ghcr.io/holochain/wind-tunnel-runner-threefold:latest-${{ matrix.arch }}
+          docker image push ghcr.io/holochain/wind-tunnel-runner-threefold:latest-${{ matrix.arch }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -82,5 +82,20 @@ jobs:
             ghcr.io/holochain/wind-tunnel-runner:latest-amd64 \
             ghcr.io/holochain/wind-tunnel-runner:latest-arm64
           docker manifest push ghcr.io/holochain/wind-tunnel-runner:latest
+
+          docker manifest create ghcr.io/holochain/wind-tunnel-runner-threefold:latest \
+            ghcr.io/holochain/wind-tunnel-runner-threefold:latest-amd64 \
+            ghcr.io/holochain/wind-tunnel-runner-threefold:latest-arm64
+          docker manifest push ghcr.io/holochain/wind-tunnel-runner-threefold:latest
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish-threefold-hub-flist:
+    needs: publish-manifest
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish docker image to threefold hub as flist
+        run: |
+          curl -X POST -F image=ghcr.io/holochain/wind-tunnel-runner-threefold:latest \
+            -H "Authorization: bearer ${{ secrets.THREEFOLD_HUB_API_TOKEN }}" \
+            https://hub.grid.tf/api/flist/me/docker
