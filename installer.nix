@@ -11,8 +11,11 @@ in
     "${modulesPath}/installer/cd-dvd/installation-cd-minimal.nix"
   ];
 
+  image = {
+    baseName = lib.mkForce "wind-tunnel-runner-auto-installer";
+  };
+
   isoImage = {
-    isoBaseName = lib.mkForce "wind-tunnel-runner-auto-installer";
     volumeID = "wind-tunnel-runner-installer";
   };
 
