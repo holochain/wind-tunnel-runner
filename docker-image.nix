@@ -2,6 +2,7 @@
 , system ? "x86_64-linux"
 , nomadSettings
 , dockerSettings
+,
 }:
 let
   # Use the given system's nixpkgs for the docker image
@@ -34,6 +35,17 @@ let
 
   entrypointPath = "/entrypoint.sh";
 
+  runtimeLdLibraryPath =
+    if system == "aarch64-linux" then
+      "/lib/aarch64-linux-gnu:/usr/lib/aarch64-linux-gnu"
+    else
+      "/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu";
+
+  nixLdExecWrapper = linuxPkgs.writeShellScriptBin "wt-nix-ld-run" ''
+    export LD_LIBRARY_PATH='${runtimeLdLibraryPath}''${LD_LIBRARY_PATH:+:}$LD_LIBRARY_PATH'
+    exec "$@"
+  '';
+
   entrypointScript = linuxPkgs.writeShellScript (builtins.baseNameOf entrypointPath) ''
     # Wrapper entrypoint that synchronizes the system clock via NTP before starting Nomad.
     # Some runners have very behind system clocks which affects wind-tunnel scenarios.
@@ -45,6 +57,10 @@ let
   baseRoot = linuxPkgs.buildEnv {
     name = "image-root";
     paths = with linuxPkgs; [
+      # base userland required for task scripts
+      bash
+      coreutils
+
       # additional system packages
       iproute2
       cacert
@@ -57,6 +73,7 @@ let
       hexdump
       influxdb2-cli
       jq
+      nixLdExecWrapper
       telegraf
       nomad_1_11
       inputs.wind-tunnel.packages.${system}.lp-tool
