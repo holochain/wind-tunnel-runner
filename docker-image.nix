@@ -1,4 +1,8 @@
-{ inputs, system ? "x86_64-linux", nomadSettings, dockerSettings }:
+{ inputs
+, system ? "x86_64-linux"
+, nomadSettings
+, dockerSettings
+}:
 let
   # Use the given system's nixpkgs for the docker image
   linuxPkgs = import inputs.nixpkgs {
@@ -44,6 +48,10 @@ let
       # additional system packages
       iproute2
       cacert
+      iputils
+      kmod
+      procps
+      util-linux
 
       # wind-tunnel job packages
       hexdump
