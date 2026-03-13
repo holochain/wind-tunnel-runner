@@ -120,7 +120,23 @@
         docker-image =
           assert system != "aarch64-darwin"
             || throw "Cannot build docker-image for system ${system} try 'nix build .#packages.x86_64-linux.docker-image' or 'nix build .#packages.aarch64-linux.docker-image' instead";
-          import ./docker-image.nix { inherit inputs system; };
+          import ./docker-image.nix {
+            inherit inputs system;
+            dockerSettings = {
+              name = "wind-tunnel-runner";
+            };
+            nomadSettings = ./nomad-settings-docker.nix;
+          };
+        docker-image-threefold =
+          assert system != "aarch64-darwin"
+            || throw "Cannot build docker-image-threefold for system ${system} try 'nix build .#packages.x86_64-linux.docker-image-threefold' or 'nix build .#packages.aarch64-linux.docker-image-threefold' instead";
+          import ./docker-image.nix {
+            inherit inputs system;
+            dockerSettings = {
+              name = "wind-tunnel-runner-threefold";
+            };
+            nomadSettings = ./nomad-settings-threefold.nix;
+          };
       };
     };
 
