@@ -51,7 +51,17 @@ let
     # Some runners have very behind system clocks which affects wind-tunnel scenarios.
     ${linuxPkgs.chrony}/bin/chronyd -q 'server pool.ntp.org iburst' 'makestep 1 -1'
 
-    exec ${linuxPkgs.nomad_1_11}/bin/nomad agent "-config=${nomadJSON}"
+    CONFIG_ARGS=(-config=${nomadJSON})
+
+    if [ -n "''${UNYT_AGENT_ID:-}" ]; then
+      UNYT_META_FILE="/tmp/nomad-unyt-meta.json"
+      ${linuxPkgs.jq}/bin/jq -n --arg id "$UNYT_AGENT_ID" \
+        '{ client: { meta: { unyt_agent_id: $id } } }' \
+        > "$UNYT_META_FILE"
+      CONFIG_ARGS+=(-config="$UNYT_META_FILE")
+    fi
+
+    exec ${linuxPkgs.nomad_1_11}/bin/nomad agent "''${CONFIG_ARGS[@]}"
   '';
 
   baseRoot = linuxPkgs.buildEnv {
