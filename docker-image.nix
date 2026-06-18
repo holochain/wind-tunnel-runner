@@ -51,7 +51,10 @@ let
     # Some runners have very behind system clocks which affects wind-tunnel scenarios.
     ${linuxPkgs.chrony}/bin/chronyd -q 'server pool.ntp.org iburst' 'makestep 1 -1'
 
-    exec ${linuxPkgs.nomad_1_11}/bin/nomad agent "-config=${nomadJSON}"
+    # Also load any drop-in config files mounted into /etc/nomad.d at deploy
+    # time (e.g. client meta such as UNYT_AGENT_PUB_KEY). Files found here are
+    # merged over the baked config; an empty/absent set of files is a no-op.
+    exec ${linuxPkgs.nomad_1_11}/bin/nomad agent "-config=${nomadJSON}" -config=/etc/nomad.d
   '';
 
   baseRoot = linuxPkgs.buildEnv {
@@ -96,6 +99,11 @@ linuxPkgs.dockerTools.buildLayeredImage {
     # Threefold requires providing the entrypoint path at deploy-time,
     # and does not seem to work with symlinked entrypoint paths.
     install -Dm755 ${entrypointScript} .${entrypointPath}
+
+    # Provide a drop-in config directory for deploy-time Nomad config (e.g.
+    # client meta). It must exist so 'nomad agent -config=/etc/nomad.d' does
+    # not error; leaving it empty simply applies no overrides.
+    mkdir -p ./etc/nomad.d
 
     # Ensure certs are real files, not symlinks
     mkdir -p ./etc/ssl/certs
