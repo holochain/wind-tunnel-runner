@@ -120,6 +120,45 @@ containers with:
 docker ps
 ```
 
+#### Setting Nomad client metadata
+
+In addition to its built-in configuration, the runner image loads any Nomad
+configuration files mounted into `/etc/nomad.d`. The agent is started with this
+directory as an extra
+[`-config`](https://developer.hashicorp.com/nomad/commands/agent#config) path
+alongside the baked-in config, and any values found there are merged over the
+defaults. This lets you attach optional, per-client settings at deploy time
+without rebuilding the image.
+
+For example, to advertise a UNYT agent public key as the `UNYT_AGENT_PUB_KEY`
+client meta field, create a file `nomad-meta.json`:
+
+```json
+{
+  "client": {
+    "meta": {
+      "UNYT_AGENT_PUB_KEY": "<your-base64-agent-public-key>"
+    }
+  }
+}
+```
+
+Then mount it into `/etc/nomad.d` when starting the container:
+
+```bash
+docker run --hostname <MY_HOSTNAME> --cgroupns=host --net=host --privileged \
+  -v "$(pwd)/nomad-meta.json:/etc/nomad.d/meta.json:ro" \
+  -d --rm ghcr.io/holochain/wind-tunnel-runner:latest
+```
+
+> [!Note]
+> Mount individual files into `/etc/nomad.d`, not a volume over the whole
+> directory. Mounting a volume over `/etc/nomad.d` would hide the image's
+> built-in configuration and the client would not start correctly.
+
+If you do not need any extra client configuration, omit the mount entirely;
+`/etc/nomad.d` is empty by default and the built-in configuration is used as-is.
+
 ### Manually
 
 #### Installing NixOS
