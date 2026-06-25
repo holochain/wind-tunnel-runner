@@ -2,6 +2,11 @@ inputs:
 let
   targetSystem = "x86_64-linux";
 
+  nixpkgsForTarget = import inputs.nixpkgs {
+    system = targetSystem;
+    config.allowUnfreePredicate = pkg: builtins.elem (inputs.nixpkgs.lib.getName pkg) [ "nomad" ];
+  };
+
   # Use this config as a base for a machine that doesn't support EFI boot and
   # was setup with the old installer ISO, before
   # https://github.com/holochain/wind-tunnel-runner/pull/24 was merged.
@@ -19,10 +24,12 @@ let
 in
 {
   meta = {
-    nixpkgs = import inputs.nixpkgs {
-      system = targetSystem;
-      config.allowUnfreePredicate = pkg: builtins.elem (inputs.nixpkgs.lib.getName pkg) [ "nomad" ];
-    };
+    # Override the bare `system` attribute, which on recent nixpkgs is a
+    # deprecated alias for `stdenv.hostPlatform.system`. Colmena reads
+    # `.system` off this set (`inherit (npkgs) system` in its evaluator);
+    # without the override that read emits an "'system' has been renamed"
+    # evaluation warning. The value is identical to the system we import with.
+    nixpkgs = nixpkgsForTarget // { system = targetSystem; };
     specialArgs = { inherit inputs; };
   };
 
